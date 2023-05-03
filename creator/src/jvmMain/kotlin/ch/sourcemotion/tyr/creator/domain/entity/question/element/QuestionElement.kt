@@ -5,8 +5,9 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo
 
 @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.PROPERTY, property = "_element_type")
 @JsonSubTypes(
-    JsonSubTypes.Type(Image::class, name = "image"),
     JsonSubTypes.Type(Text::class, name = "text"),
+    JsonSubTypes.Type(Image::class, name = "image"),
+    JsonSubTypes.Type(Sound::class, name = "sound"),
 )
-interface Element
+interface QuestionElement
 
