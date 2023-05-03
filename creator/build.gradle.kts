@@ -2,8 +2,12 @@ import org.gradle.api.tasks.testing.logging.TestExceptionFormat
 
 plugins {
     kotlin("multiplatform")
+    kotlin("plugin.serialization")
 }
 
+val kotlinSerializationVersion:String by project
+
+val ktorVersion:String by project
 val kotlinWrapperVersion:String by project
 
 val vertxVersion:String by project
@@ -44,21 +48,30 @@ kotlin {
     sourceSets {
         val commonMain by getting {
             dependencies {
+                implementation(enforcedPlatform("org.jetbrains.kotlinx:kotlinx-serialization-bom:$kotlinSerializationVersion"))
+
+                implementation("org.jetbrains.kotlinx:kotlinx-serialization-json")
             }
         }
         val commonTest by getting {
             dependencies {
             }
         }
+
         val jsMain by getting {
             dependencies {
                 implementation(enforcedPlatform("org.jetbrains.kotlin-wrappers:kotlin-wrappers-bom:$kotlinWrapperVersion"))
+                implementation(enforcedPlatform("org.jetbrains.kotlinx:kotlinx-serialization-bom:$kotlinSerializationVersion"))
+
                 implementation("org.jetbrains.kotlin-wrappers:kotlin-react")
                 implementation("org.jetbrains.kotlin-wrappers:kotlin-react-dom")
                 implementation("org.jetbrains.kotlin-wrappers:kotlin-react-router-dom")
                 implementation("org.jetbrains.kotlin-wrappers:kotlin-emotion")
                 implementation("org.jetbrains.kotlin-wrappers:kotlin-mui")
                 implementation("org.jetbrains.kotlin-wrappers:kotlin-mui-icons")
+
+                implementation("org.jetbrains.kotlinx:kotlinx-serialization-json")
+                implementation("io.ktor:ktor-client-js:$ktorVersion")
             }
         }
         val jsTest by getting {
@@ -66,11 +79,14 @@ kotlin {
                 implementation(kotlin("test-js"))
             }
         }
+
         val jvmMain by getting {
             dependencies {
                 implementation(enforcedPlatform("io.vertx:vertx-dependencies:$vertxVersion"))
                 implementation(enforcedPlatform("com.fasterxml.jackson:jackson-bom:$jacksonVersion"))
                 implementation(enforcedPlatform("org.apache.logging.log4j:log4j-bom:$log4j2Version"))
+                implementation(enforcedPlatform("org.jetbrains.kotlinx:kotlinx-serialization-bom:$kotlinSerializationVersion"))
+
                 implementation(vertx("core"))
                 implementation(vertx("web"))
                 implementation(vertx("lang-kotlin"))
@@ -99,6 +115,8 @@ kotlin {
 
                 implementation("org.jetbrains.kotlinx:kotlinx-coroutines-jdk8:$kotlinCoroutinesVersion")
                 implementation("org.jetbrains.kotlinx:kotlinx-coroutines-slf4j:$kotlinCoroutinesVersion")
+
+                implementation("org.jetbrains.kotlinx:kotlinx-serialization-json")
             }
         }
         val jvmTest by getting {
