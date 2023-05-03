@@ -78,6 +78,24 @@ databaseChangeLog:
                     foreignKeyName: category_stage_fk
                     references: quiz_stage (id)
 
+        - createTable:
+            tableName: file_info
+            columns:
+              - column:
+                  name: id
+                  type: uuid
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: mime_type
+                  type: varchar(30)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: description
+                  type: text
+
   - changeSet:
       id: 2
       author: wem
