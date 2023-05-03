@@ -1,0 +1,85 @@
+databaseChangeLog:
+  - changeSet:
+      id: 1
+      author: wem
+      changes:
+        - createTable:
+            tableName: quiz
+            columns:
+              - column:
+                  name: id
+                  type: uuid
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: date
+                  type: date
+                  constraints:
+                    nullable: false
+
+        - createTable:
+            tableName: quiz_stage
+            columns:
+              - column:
+                  name: id
+                  type: uuid
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: number
+                  type: integer
+                  constraints:
+                    nullable: false
+              - column:
+                  name: description
+                  type: text
+              - column:
+                  name: quiz_id
+                  type: uuid
+                  constraints:
+                    nullable: false
+                    foreignKeyName: stage_quiz_fk
+                    references: quiz(id)
+
+        - createTable:
+            tableName: quiz_category
+            columns:
+              - column:
+                  name: id
+                  type: uuid
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: title
+                  type: text
+                  constraints:
+                    nullable: false
+              - column:
+                  name: context_or_question_text
+                  type: jsonb
+                  constraints:
+                    nullable: false
+              - column:
+                  name: number
+                  type: integer
+                  constraints:
+                    nullable: false
+              - column:
+                  name: questions
+                  type: jsonb
+              - column:
+                  name: quiz_stage_id
+                  type: uuid
+                  constraints:
+                    nullable: false
+                    foreignKeyName: category_stage_fk
+                    references: quiz_stage (id)
+
+  - changeSet:
+      id: 2
+      author: wem
+      tagDatabase:
+        tag: 0.1
