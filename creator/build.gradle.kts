@@ -6,6 +6,8 @@ plugins {
 }
 
 val kotlinSerializationVersion:String by project
+val benasherUuidVersion:String by project
+val kotlinDateTimeVersion:String by project
 
 val ktorVersion:String by project
 val kotlinWrapperVersion:String by project
@@ -51,6 +53,8 @@ kotlin {
                 implementation(enforcedPlatform("org.jetbrains.kotlinx:kotlinx-serialization-bom:$kotlinSerializationVersion"))
 
                 implementation("org.jetbrains.kotlinx:kotlinx-serialization-json")
+                implementation("org.jetbrains.kotlinx:kotlinx-datetime:$kotlinDateTimeVersion")
+                implementation("com.benasher44:uuid:$benasherUuidVersion")
             }
         }
         val commonTest by getting {
@@ -69,6 +73,8 @@ kotlin {
                 implementation("org.jetbrains.kotlin-wrappers:kotlin-emotion")
                 implementation("org.jetbrains.kotlin-wrappers:kotlin-mui")
                 implementation("org.jetbrains.kotlin-wrappers:kotlin-mui-icons")
+
+                implementation("io.github.microutils:kotlin-logging-js:$kotlinLogginVersion")
 
                 implementation("org.jetbrains.kotlinx:kotlinx-serialization-json")
                 implementation("io.ktor:ktor-client-js:$ktorVersion")
@@ -121,9 +127,10 @@ kotlin {
         }
         val jvmTest by getting {
             dependencies {
-                implementation(platform("org.testcontainers:testcontainers-bom:$testcontainersVersion"))
+                implementation(enforcedPlatform("org.testcontainers:testcontainers-bom:$testcontainersVersion"))
 
                 implementation(vertx("junit5"))
+                implementation(vertx("web-client"))
                 implementation("io.kotest:kotest-assertions-core-jvm:$kotestVersion")
                 implementation("org.testcontainers:postgresql")
             }
