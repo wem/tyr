@@ -1,5 +1,6 @@
 package ch.sourcemotion.tyr.creator.testing
 
+import ch.sourcemotion.tyr.creator.codec.registerLocalCodec
 import ch.sourcemotion.tyr.creator.config.configureObjectMapper
 import io.vertx.core.Vertx
 import io.vertx.core.VertxOptions
@@ -11,7 +12,6 @@ import io.vertx.kotlin.coroutines.dispatcher
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.runBlocking
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.extension.ExtendWith
 import org.junit.jupiter.api.extension.RegisterExtension
@@ -29,12 +29,13 @@ abstract class AbstractVertxTest(private val vertxOptions: VertxOptions = VertxO
     fun setUpVertx() {
         configureObjectMapper()
         vertx = rc.vertx()
+        vertx.eventBus().registerLocalCodec()
     }
 
 
     fun VertxTestContext.async(block: suspend CoroutineScope.() -> Unit) {
         val checkpoint = checkpoint()
-        CoroutineScope(vertx.orCreateContext.dispatcher()).launch {
+        CoroutineScope(vertx.dispatcher()).launch {
             runCatching { block() }
                 .onSuccess { checkpoint.flag() }
                 .onFailure { failNow(it) }
@@ -46,7 +47,7 @@ abstract class AbstractVertxTest(private val vertxOptions: VertxOptions = VertxO
         block: suspend CoroutineScope.(Checkpoint) -> Unit
     ) {
         val controlCheckpoint = checkpoint()
-        CoroutineScope(vertx.orCreateContext.dispatcher()).launch {
+        CoroutineScope(vertx.dispatcher()).launch {
             runCatching { block(checkpoint) }
                 .onSuccess { controlCheckpoint.flag() }
                 .onFailure { failNow(it) }

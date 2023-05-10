@@ -27,7 +27,7 @@ class FileStorageTest : AbstractVertxTest() {
             val fileDescription = "file description"
 
             val sut = FileStorage.of(vertx, FileStorageConfig(tempDir.toFile().absolutePath), object : FileInfoManager {
-                override suspend fun saveFileInfoOf(fileId: UUID, description: String?) {
+                override suspend fun saveFileInfoOf(fileId: UUID, mimeType: MimeType, description: String?) {
                     testContext.verify { description.shouldBe(fileDescription) }
                     checkpoint.flag()
                 }
@@ -45,7 +45,7 @@ class FileStorageTest : AbstractVertxTest() {
     fun `save file - file info manager fails`(testContext: VertxTestContext, @TempDir tempDir: Path) =
         testContext.async(1) { checkpoint ->
             val sut = FileStorage.of(vertx, FileStorageConfig(tempDir.toFile().absolutePath), object : FileInfoManager {
-                override suspend fun saveFileInfoOf(fileId: UUID, description: String?) {
+                override suspend fun saveFileInfoOf(fileId: UUID, mimeType: MimeType, description: String?) {
                     throw Exception("File info manager did fail")
                 }
 
@@ -64,7 +64,7 @@ class FileStorageTest : AbstractVertxTest() {
         testContext.async(2) { checkpoint ->
             var savedFileId: UUID? = null
             val sut = FileStorage.of(vertx, FileStorageConfig(tempDir.toFile().absolutePath), object : FileInfoManager {
-                override suspend fun saveFileInfoOf(fileId: UUID, description: String?) {
+                override suspend fun saveFileInfoOf(fileId: UUID, mimeType: MimeType, description: String?) {
                     savedFileId = fileId
                     checkpoint.flag()
                 }
@@ -85,7 +85,7 @@ class FileStorageTest : AbstractVertxTest() {
     fun `delete - file info manager fails`(testContext: VertxTestContext, @TempDir tempDir: Path) =
         testContext.async(1) { checkpoint ->
             val sut = FileStorage.of(vertx, FileStorageConfig(tempDir.toFile().absolutePath), object : FileInfoManager {
-                override suspend fun saveFileInfoOf(fileId: UUID, description: String?) {
+                override suspend fun saveFileInfoOf(fileId: UUID, mimeType: MimeType, description: String?) {
                     checkpoint.flag()
                 }
 

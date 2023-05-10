@@ -12,7 +12,7 @@ import mu.KLogging
 import java.util.*
 
 interface FileInfoManager {
-    suspend fun saveFileInfoOf(fileId: UUID, description: String?)
+    suspend fun saveFileInfoOf(fileId: UUID, mimeType: MimeType, description: String?)
     suspend fun deleteFileInfoOf(fileId: UUID)
 }
 
@@ -35,7 +35,7 @@ class FileStorage private constructor(
         runCatching {
             coroutineScope {
                 launch { fileSystem.writeFile("$basePath/$fileName", data).await() }
-                launch { fileInfoManager.saveFileInfoOf(fileId, description) }
+                launch { fileInfoManager.saveFileInfoOf(fileId, mimeType, description) }
             }
         }.onFailure { failure ->
             logger.error(failure) { "Failed to save file properly. File will get cleaned up" }
