@@ -1,4 +1,5 @@
 import org.gradle.api.tasks.testing.logging.TestExceptionFormat
+import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 
 plugins {
     kotlin("multiplatform")
@@ -46,6 +47,12 @@ kotlin {
     }
     jvm {
         withJava()
+        compilations.all {
+            compilerOptions.configure {
+                jvmTarget.set(JvmTarget.JVM_11)
+                freeCompilerArgs.set(freeCompilerArgs.get() + "-opt-in=kotlin.contracts.ExperimentalContracts")
+            }
+        }
     }
     sourceSets {
         val commonMain by getting {
