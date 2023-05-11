@@ -52,7 +52,9 @@ class QuizRepository(pool: PgPool) : AbstractRepository(pool) {
     suspend fun save(quiz: Quiz, client: SqlClient = pool) {
         runCatching {
             SqlTemplate.forUpdate(client, SAVE_QUERY).mapFrom(TupleMapper.mapper(QuizTupleMapper)).execute(quiz).await()
-        }.getOrElse { failure -> throw QuizRepositoryException("Failed to save quiz '${quiz.encodeToJson()}'", failure) }
+        }.getOrElse { failure ->
+            throw QuizRepositoryException("Failed to save quiz '${quiz.encodeToJson()}'", failure)
+        }
     }
 
     suspend fun delete(id: UUID, client: SqlClient = pool) {
@@ -88,7 +90,9 @@ class QuizRepository(pool: PgPool) : AbstractRepository(pool) {
                 .execute(mapOf(ID_COLUMN to id))
                 .await()
             mapper.buildFromRows().firstOrNull()
-        }.getOrElse { failure -> throw QuizRepositoryException("Failed to find quiz (incl. its stages) by id '$id'", failure) }
+        }.getOrElse { failure ->
+            throw QuizRepositoryException("Failed to find quiz (incl. its stages) by id '$id'", failure)
+        }
     }
 
     suspend fun findByIdWithStagesAndCategories(id: UUID, client: SqlClient = pool): Quiz? {
@@ -99,7 +103,9 @@ class QuizRepository(pool: PgPool) : AbstractRepository(pool) {
                 .execute(mapOf(ID_COLUMN to id))
                 .await()
             mapper.buildFromRows().firstOrNull()
-        }.getOrElse { failure -> throw QuizRepositoryException("Failed to find quiz (incl. its stages and categories) by id '$id'", failure) }
+        }.getOrElse { failure ->
+            throw QuizRepositoryException("Failed to find quiz (incl. its stages and categories) by id '$id'", failure)
+        }
     }
 }
 

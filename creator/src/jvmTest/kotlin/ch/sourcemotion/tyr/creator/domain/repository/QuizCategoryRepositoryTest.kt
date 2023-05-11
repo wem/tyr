@@ -10,7 +10,7 @@ import ch.sourcemotion.tyr.creator.domain.entity.question.SimpleElementQuestion
 import ch.sourcemotion.tyr.creator.domain.entity.question.SortElementQuestion
 import ch.sourcemotion.tyr.creator.domain.entity.question.element.Image
 import ch.sourcemotion.tyr.creator.domain.entity.question.element.Sound
-import ch.sourcemotion.tyr.creator.domain.entity.question.element.Text
+import ch.sourcemotion.tyr.creator.domain.entity.question.element.textOf
 import ch.sourcemotion.tyr.creator.ext.getOrCreateByFactory
 import ch.sourcemotion.tyr.creator.testing.AbstractVertxDatabaseTest
 import io.kotest.matchers.collections.shouldContainExactlyInAnyOrder
@@ -37,7 +37,7 @@ class QuizCategoryRepositoryTest : AbstractVertxDatabaseTest() {
 
     @Test
     fun `save find by id and delete`(testContext: VertxTestContext) = testContext.async {
-        val question = SimpleElementQuestion(Text.textOf("Question text"), Text.textOf("Answer"))
+        val question = SimpleElementQuestion(textOf("Question text"), textOf("Answer"))
         val category = QuizCategory.new("title", 1, "Category question", "description", question)
 
         val (_, quizStage) = saveDummyQuizAndStage()
@@ -50,7 +50,7 @@ class QuizCategoryRepositoryTest : AbstractVertxDatabaseTest() {
 
     @Test
     fun `save and update`(testContext: VertxTestContext) = testContext.async {
-        val question = SimpleElementQuestion(Text.textOf("Question text"), Text.textOf("Answer"))
+        val question = SimpleElementQuestion(textOf("Question text"), textOf("Answer"))
         val category = QuizCategory.new("title", 1, "Category question", "description", question)
         val (_, quizStage) = saveDummyQuizAndStage()
 
@@ -60,10 +60,10 @@ class QuizCategoryRepositoryTest : AbstractVertxDatabaseTest() {
         val updatedCategory = category.copy(
             title = "New title",
             number = 2,
-            contextOrQuestionText = Text.textOf("New category question"),
+            contextOrQuestionText = textOf("New category question"),
             questions = category.questions + SimpleElementQuestion(
-                Text.textOf("Another question text"),
-                Text.textOf("Another answer")
+                textOf("Another question text"),
+                textOf("Another answer")
             )
         )
         sut.save(quizStage.id, updatedCategory)
@@ -74,19 +74,19 @@ class QuizCategoryRepositoryTest : AbstractVertxDatabaseTest() {
     fun `save with any question variant`(testContext: VertxTestContext) = testContext.async {
         val (_, quizStage) = saveDummyQuizAndStage()
 
-        val simpleTextQuestion = SimpleElementQuestion(Text.textOf("Question"), Text.textOf("Answer"))
-        val simpleImageQuestion = SimpleElementQuestion(Text.textOf("Question text"), newJpeg())
-        val simpleSoundQuestion = SimpleElementQuestion(Text.textOf("Question text"), newMp3())
+        val simpleTextQuestion = SimpleElementQuestion(textOf("Question"), textOf("Answer"))
+        val simpleImageQuestion = SimpleElementQuestion(textOf("Question text"), newJpeg())
+        val simpleSoundQuestion = SimpleElementQuestion(textOf("Question text"), newMp3())
 
-        val textSortQuestion = SortElementQuestion(listOf(Text.textOf("Question text")), listOf(Text.textOf("Question text")))
+        val textSortQuestion = SortElementQuestion(listOf(textOf("Question text")), listOf(textOf("Question text")))
         val imageSortQuestion = SortElementQuestion(listOf(newJpeg()), listOf(newJpeg()))
         val soundSortQuestion = SortElementQuestion(listOf(newMp3()), listOf(newMp3()))
 
-        val textAssociationQuestion = AssociationQuestion(listOf(Text.textOf("Question text")), listOf(Text.textOf("Question text")))
+        val textAssociationQuestion = AssociationQuestion(listOf(textOf("Question text")), listOf(textOf("Question text")))
         val imageAssociationQuestion = AssociationQuestion(listOf(newJpeg()), listOf(newJpeg()))
         val soundAssociationQuestion = AssociationQuestion(listOf(newMp3()), listOf(newMp3()))
 
-        val textMultiChoiceQuestion = MultiChoiceQuestion(listOf(Text.textOf("Question text")))
+        val textMultiChoiceQuestion = MultiChoiceQuestion(listOf(textOf("Question text")))
         val imageMultiChoiceQuestion = MultiChoiceQuestion(listOf(newJpeg()))
         val soundMultiChoiceQuestion = MultiChoiceQuestion(listOf(newMp3()))
 
@@ -112,7 +112,7 @@ class QuizCategoryRepositoryTest : AbstractVertxDatabaseTest() {
 
     @Test
     fun `find all of stage`(testContext: VertxTestContext) = testContext.async {
-        val question = SimpleElementQuestion(Text.textOf("Question text"), Text.textOf("Answer"))
+        val question = SimpleElementQuestion(textOf("Question text"), textOf("Answer"))
         val (_, quizStage) = saveDummyQuizAndStage()
 
         val categories = sut.withTx { conn ->

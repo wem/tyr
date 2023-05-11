@@ -3,7 +3,9 @@ package ch.sourcemotion.tyr.creator.domain.service
 import ch.sourcemotion.tyr.creator.commandquery.*
 import ch.sourcemotion.tyr.creator.dto.QuizDto
 import ch.sourcemotion.tyr.creator.ext.SharedFactory
+import ch.sourcemotion.tyr.creator.logging.mdcOf
 import io.vertx.core.Vertx
+import kotlinx.coroutines.slf4j.MDCContext
 import java.util.*
 
 interface QuizService : Service {
@@ -30,6 +32,8 @@ interface QuizService : Service {
         }
 
         override val address = Companion.address
+
+        override fun mdcOf() = mdcOf(quizId = quizDto.id)
     }
 
     data class GetQuizQuery(val id: UUID, val withStages: Boolean, val withCategories: Boolean) : Query<QuizDto?> {
@@ -38,6 +42,8 @@ interface QuizService : Service {
         }
 
         override val address = Companion.address
+
+        override fun mdcOf() = mdcOf(quizId = id)
     }
 
     data class GetQuizzesQuery(val withStages: Boolean, val withCategories: Boolean) : Query<List<QuizDto>> {
@@ -46,6 +52,8 @@ interface QuizService : Service {
         }
 
         override val address = Companion.address
+
+        override fun mdcOf() = MDCContext()
     }
 
     data class DeleteQuizCmd(val id: UUID) : Cmd {
@@ -54,5 +62,7 @@ interface QuizService : Service {
         }
 
         override val address = Companion.address
+
+        override fun mdcOf() = mdcOf(quizId = id)
     }
 }

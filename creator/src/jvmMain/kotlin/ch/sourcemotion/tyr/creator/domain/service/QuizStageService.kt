@@ -3,6 +3,7 @@ package ch.sourcemotion.tyr.creator.domain.service
 import ch.sourcemotion.tyr.creator.commandquery.*
 import ch.sourcemotion.tyr.creator.dto.QuizStageDto
 import ch.sourcemotion.tyr.creator.ext.SharedFactory
+import ch.sourcemotion.tyr.creator.logging.mdcOf
 import io.vertx.core.Vertx
 import java.util.*
 
@@ -30,6 +31,8 @@ interface QuizStageService : Service {
         }
 
         override val address = Companion.address
+
+        override fun mdcOf() = mdcOf(quizId = quizId, quizStageId = quizStageDto.id)
     }
 
     data class GetQuizStageQuery(val id: UUID, val withCategories: Boolean) : Query<QuizStageDto?> {
@@ -38,6 +41,8 @@ interface QuizStageService : Service {
         }
 
         override val address = Companion.address
+
+        override fun mdcOf() = mdcOf(quizStageId = id)
     }
 
     data class GetQuizStagesQuery(val quizId: UUID, val withCategories: Boolean) : Query<List<QuizStageDto>> {
@@ -46,6 +51,8 @@ interface QuizStageService : Service {
         }
 
         override val address = Companion.address
+
+        override fun mdcOf() = mdcOf(quizId = quizId)
     }
 
     data class DeleteQuizStageCmd(val id: UUID) : Cmd {
@@ -54,5 +61,7 @@ interface QuizStageService : Service {
         }
 
         override val address = Companion.address
+
+        override fun mdcOf() = mdcOf(quizStageId = id)
     }
 }

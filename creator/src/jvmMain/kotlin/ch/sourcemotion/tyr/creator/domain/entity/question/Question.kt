@@ -11,16 +11,16 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo
     JsonSubTypes.Type(SimpleElementQuestion::class, name = "simple"),
     JsonSubTypes.Type(SortElementQuestion::class, name = "sort"),
 )
-interface Question
+sealed interface Question
 
 /**
  * Question that uses / inherits the question text from category
  */
-interface CategoryContextQuestion: Question
+sealed interface CategoryContextQuestion: Question
 
 /**
  * Question has its individual question text like category "Answer some question about history".
  */
-interface IndividualTextQuestion : Question {
+sealed interface IndividualTextQuestion : Question {
     val question: Text
 }

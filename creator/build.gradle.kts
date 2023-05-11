@@ -26,6 +26,7 @@ val liquibaseVersion:String by project
 
 
 val kotestVersion:String by project
+val mockkVersion:String by project
 val testcontainersVersion:String by project
 val postgresVersion:String by project
 
@@ -137,6 +138,7 @@ kotlin {
                 implementation(enforcedPlatform("org.testcontainers:testcontainers-bom:$testcontainersVersion"))
 
                 implementation(vertx("junit5"))
+                implementation("io.mockk:mockk:$mockkVersion")
                 implementation(vertx("web-client"))
                 implementation("io.kotest:kotest-assertions-core-jvm:$kotestVersion")
                 implementation("org.testcontainers:postgresql")
