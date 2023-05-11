@@ -3,9 +3,9 @@ package ch.sourcemotion.tyr.creator.domain.entity
 import ch.sourcemotion.tyr.creator.domain.entity.Entity.Companion.ID_COLUMN
 import ch.sourcemotion.tyr.creator.domain.entity.question.Question
 import ch.sourcemotion.tyr.creator.domain.entity.question.element.Text
+import ch.sourcemotion.tyr.creator.domain.entity.question.element.textOf
 import com.fasterxml.jackson.annotation.JsonAlias
 import com.fasterxml.jackson.annotation.JsonProperty
-import com.fasterxml.jackson.annotation.JsonProperty.Access.READ_ONLY
 import java.util.*
 
 data class QuizCategory(
@@ -70,7 +70,7 @@ data class QuizCategory(
             contextOrQuestion: String,
             description: String?,
             questions: List<Question>
-        ) = QuizCategory(UUID.randomUUID(), title, number, Text.textOf(contextOrQuestion, description), questions)
+        ) = QuizCategory(UUID.randomUUID(), title, number, textOf(contextOrQuestion, description), questions)
 
         fun new(
             title: String,
@@ -78,6 +78,6 @@ data class QuizCategory(
             contextOrQuestion: String,
             description: String?,
             vararg questions: Question
-        ) = QuizCategory(UUID.randomUUID(), title, number, Text.textOf(contextOrQuestion, description), questions.toList())
+        ) = QuizCategory(UUID.randomUUID(), title, number, textOf(contextOrQuestion, description), questions.toList())
     }
 }

@@ -65,9 +65,7 @@ class QuizStageRepository(pool: PgPool) : AbstractRepository(pool) {
                 .await()
             mapper.buildFromRows()
         }.getOrElse { failure ->
-            throw QuizStageRepositoryException(
-                "Failed to find all stages of quiz with id '${quizId}'", failure
-            )
+            throw QuizStageRepositoryException("Failed to find all stages of quiz with id '${quizId}'", failure)
         }
     }
 
@@ -91,9 +89,7 @@ class QuizStageRepository(pool: PgPool) : AbstractRepository(pool) {
                 .await()
             mapper.buildFromRows().firstOrNull()
         }.getOrElse { failure ->
-            throw QuizStageRepositoryException(
-                "Failed to find stage (incl. its categories) by id '${id}'", failure
-            )
+            throw QuizStageRepositoryException("Failed to find stage (incl. its categories) by id '${id}'", failure)
         }
     }
 }

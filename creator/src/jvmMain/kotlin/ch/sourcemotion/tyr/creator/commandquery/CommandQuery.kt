@@ -9,7 +9,7 @@ import io.vertx.kotlin.coroutines.CoroutineVerticle
 import io.vertx.kotlin.coroutines.await
 import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.launch
-import mu.KLogger
+import kotlinx.coroutines.slf4j.MDCContext
 
 interface Addressable {
     val address: String
@@ -20,9 +20,13 @@ interface EventBusMsg {
         get() = DeliveryOptions()
 }
 
-interface Cmd : Addressable, EventBusMsg
+interface Cmd : Addressable, EventBusMsg {
+    fun mdcOf(): MDCContext
+}
 
-interface Query<RESPONSE> : Addressable, EventBusMsg
+interface Query<RESPONSE> : Addressable, EventBusMsg {
+    fun mdcOf(): MDCContext
+}
 
 suspend fun EventBus.cmdMsg(cmd: Cmd) {
     val replyMsg = request<Any?>(
@@ -51,26 +55,26 @@ suspend fun <R, Q : Query<R>> EventBus.queryMsg(query: Q): R {
 }
 
 
-fun <C : Cmd> CoroutineVerticle.onCommand(logger: KLogger, block: suspend (C) -> Unit): Handler<Message<C>> {
+fun <C : Cmd> CoroutineVerticle.onCommand(block: suspend (C) -> Unit): Handler<Message<C>> {
     return Handler { msg ->
         val exceptionHandler = CoroutineExceptionHandler { ctx, failure ->
             msg.reply(failure)
         }
-        launch(exceptionHandler) {
-            val cmd = msg.body()
+        val cmd = msg.body()
+        launch(exceptionHandler + cmd.mdcOf()) {
             block(cmd)
             msg.ack()
         }
     }
 }
 
-fun <R, Q : Query<R>> CoroutineVerticle.onQuery(logger: KLogger, block: suspend (Q) -> R): Handler<Message<Q>> {
+fun <R, Q : Query<R>> CoroutineVerticle.onQuery(block: suspend (Q) -> R): Handler<Message<Q>> {
     return Handler { msg ->
         val exceptionHandler = CoroutineExceptionHandler { ctx, failure ->
             msg.reply(failure)
         }
-        launch(exceptionHandler) {
-            val query = msg.body()
+        val query = msg.body()
+        launch(exceptionHandler + query.mdcOf()) {
             val result = block(query)
             msg.reply(result)
         }

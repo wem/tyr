@@ -50,9 +50,7 @@ class QuizCategoryRepository(pool: PgPool) : AbstractRepository(pool) {
         runCatching {
             SqlTemplate.forUpdate(client, DELETE_QUERY).execute(mapOf(ID_COLUMN to id)).await()
         }.getOrElse { failure ->
-            throw QuizCategoryRepositoryException(
-                "Failed to delete quiz category with id '$id'", failure
-            )
+            throw QuizCategoryRepositoryException("Failed to delete quiz category with id '$id'", failure)
         }
     }
 
@@ -64,9 +62,7 @@ class QuizCategoryRepository(pool: PgPool) : AbstractRepository(pool) {
                 .await()
             mapper.buildFromRows()
         }.getOrElse { failure ->
-            throw QuizCategoryRepositoryException(
-                "Failed to find all quiz categories of stage '$stageId'", failure
-            )
+            throw QuizCategoryRepositoryException("Failed to find all quiz categories of stage '$stageId'", failure)
         }
     }
 
@@ -79,9 +75,7 @@ class QuizCategoryRepository(pool: PgPool) : AbstractRepository(pool) {
                 .await()
             mapper.buildFromRows().firstOrNull()
         }.getOrElse { failure ->
-            throw QuizCategoryRepositoryException(
-                "Failed to find quiz category by id '$id'", failure
-            )
+            throw QuizCategoryRepositoryException("Failed to find quiz category by id '$id'", failure)
         }
     }
 }

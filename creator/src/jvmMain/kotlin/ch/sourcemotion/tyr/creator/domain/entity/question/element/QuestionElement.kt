@@ -9,5 +9,5 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo
     JsonSubTypes.Type(Image::class, name = "image"),
     JsonSubTypes.Type(Sound::class, name = "sound"),
 )
-interface QuestionElement
+sealed interface QuestionElement
 
