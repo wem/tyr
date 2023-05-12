@@ -1,0 +1,16 @@
+web_server:
+  port: 8887
+  file_upload_folder: "/home/michel/private/tyr-filestore"
+  devel_mode: true
+postgres:
+  user_name: "postgres"
+  password: "kshjifs78fsfhsdfisdf867s87fzs87f6sdfzh"
+  host: "localhost"
+  port: 5432
+  ssl: false
+  database: "postgres"
+  schema_definition_file_path: "/database/database-change-log.yaml"
+  schema_version: "0.1"
+  max_connections_per_thread: 5
+file_storage:
+  base_filesystem_path: "/home/michel/private/tyr-filestore"
