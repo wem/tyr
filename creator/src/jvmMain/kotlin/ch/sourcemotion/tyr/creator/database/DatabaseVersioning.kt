@@ -17,6 +17,7 @@ class DatabaseVersioning(private val vertx: Vertx, private val config: PostgresC
         vertx.executeBlocking<Unit> { promise ->
             try {
                 liquibase.update(config.schemaVersion, Contexts())
+                liquibase.close()
                 promise.complete()
             } catch (cause: Exception) {
                 promise.fail(cause)
@@ -38,7 +39,7 @@ private fun jdbcConnectionOf(config: PostgresConfig): JdbcConnection {
 
 private fun jdbcPropertiesOf(config: PostgresConfig) = Properties().apply {
     put("user", config.userName)
-    put("password", config.userName)
+    put("password", config.password)
     put("ssl", "${config.ssl}")
 }
 

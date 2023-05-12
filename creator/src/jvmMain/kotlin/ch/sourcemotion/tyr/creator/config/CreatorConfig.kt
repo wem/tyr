@@ -6,7 +6,11 @@ data class CreatorConfig(
     val fileStorage: FileStorageConfig
 )
 
-data class WebServerConfig(val port: Int)
+data class WebServerConfig(
+    val port: Int,
+    val fileUploadFolder: String,
+    val develMode: Boolean // If true = CORS enabled
+)
 
 data class PostgresConfig(
     val userName: String,

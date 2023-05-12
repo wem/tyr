@@ -15,7 +15,7 @@ fun configureObjectMapper() {
 }
 
 fun ObjectMapper.applyCommonConfiguration(): ObjectMapper {
-    propertyNamingStrategy = PropertyNamingStrategies.LOWER_CAMEL_CASE
+    propertyNamingStrategy = PropertyNamingStrategies.SNAKE_CASE
     enable(MapperFeature.ACCEPT_CASE_INSENSITIVE_ENUMS)
     configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
     return registerModule(JavaTimeModule()).registerKotlinModule().registerModule(BlackbirdModule())
