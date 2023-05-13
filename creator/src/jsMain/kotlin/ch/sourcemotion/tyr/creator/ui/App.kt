@@ -1,6 +1,8 @@
 package ch.sourcemotion.tyr.creator.ui
 
-import ch.sourcemotion.tyr.creator.ui.overview.QuizzesOverview
+import ch.sourcemotion.tyr.creator.ui.category.QuizCategoryEditor
+import ch.sourcemotion.tyr.creator.ui.quiz.QuizEditor
+import ch.sourcemotion.tyr.creator.ui.stage.QuizStageEditor
 import js.core.jso
 import react.FC
 import react.Props
@@ -18,14 +20,34 @@ fun main() {
     createRoot(rootElement).render(App.create())
 }
 
-
 private val browserRouter = createBrowserRouter(
     routes = arrayOf(
         jso {
             path = "/"
-            Component = QuizzesOverview
+            Component = Creator
             ErrorBoundary = Error
-        }
+            children = arrayOf(
+                jso {
+                    path = ":$QUIZ_NAV_PARAM"
+                    Component = QuizEditor
+                    ErrorBoundary = Error
+                    children = arrayOf(
+                        jso {
+                            path = ":$QUIZ_STAGE_NAV_PARAM"
+                            Component = QuizStageEditor
+                            ErrorBoundary = Error
+                            children = arrayOf(
+                                jso {
+                                    path = ":$QUIZ_CATEGORY_NAV_PARAM"
+                                    Component = QuizCategoryEditor
+                                    ErrorBoundary = Error
+                                }
+                            )
+                        }
+                    )
+                }
+            )
+        },
     )
 )
 
