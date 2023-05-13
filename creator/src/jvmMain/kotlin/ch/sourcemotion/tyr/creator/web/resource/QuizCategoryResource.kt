@@ -3,7 +3,7 @@ package ch.sourcemotion.tyr.creator.web.resource
 import ch.sourcemotion.tyr.creator.domain.service.QuizCategoryService
 import ch.sourcemotion.tyr.creator.domain.service.QuizCategoryService.*
 import ch.sourcemotion.tyr.creator.dto.QuizCategoryDto
-import ch.sourcemotion.tyr.creator.dto.jsonSerialization
+import ch.sourcemotion.tyr.creator.dto.jsonDtoSerialization
 import ch.sourcemotion.tyr.creator.ext.asUtf8String
 import ch.sourcemotion.tyr.creator.ext.onFailureAndRethrow
 import ch.sourcemotion.tyr.creator.logging.mdcOf
@@ -24,7 +24,7 @@ class QuizCategoryResource(
     vertx: Vertx,
     scope: CoroutineScope,
     private val quizStageIdKey: String,
-    json: Json = jsonSerialization()
+    json: Json = jsonDtoSerialization()
 ) :
     AbstractResource(vertx, scope, json) {
 
@@ -76,7 +76,10 @@ class QuizCategoryResource(
             rc.withExceptionHandling(mdcOf(quizStageId = quizStageId)) {
                 val quizCategoryDtos = service.runCatching { getQuizCategories(GetQuizCategoriesQuery(quizStageId)) }
                     .onFailureAndRethrow { failure -> logger.error(failure) { "Failed to get quiz categories" } }
-                rc.response().setStatusCode(OK.code()).end(json.encodeToString(quizCategoryDtos))
+                rc.response()
+                    .appJsonContentType()
+                    .setStatusCode(OK.code())
+                    .end(json.encodeToString(quizCategoryDtos))
             }
         }
     }
@@ -91,7 +94,10 @@ class QuizCategoryResource(
                 val quizCategoryDto = service.runCatching { getQuizCategory(GetQuizCategoryQuery(quizCategoryId)) }
                     .onFailureAndRethrow { logger.error { "Failed to get quiz category" } }
                 if (quizCategoryDto != null) {
-                    rc.response().setStatusCode(OK.code()).end(json.encodeToString(quizCategoryDto))
+                    rc.response()
+                        .appJsonContentType()
+                        .setStatusCode(OK.code())
+                        .end(json.encodeToString(quizCategoryDto))
                 } else {
                     rc.response().setStatusCode(NOT_FOUND.code())
                         .setStatusMessage("Quiz category for id '$quizCategoryId' not found")

@@ -4,7 +4,7 @@ import ch.sourcemotion.tyr.creator.domain.service.QuizCategoryService.*
 import ch.sourcemotion.tyr.creator.domain.service.QuizStageService.GetQuizStageQuery
 import ch.sourcemotion.tyr.creator.dto.QuizCategoryDto
 import ch.sourcemotion.tyr.creator.dto.element.TextDto.Companion.textDtoOf
-import ch.sourcemotion.tyr.creator.dto.jsonSerialization
+import ch.sourcemotion.tyr.creator.dto.jsonDtoSerialization
 import ch.sourcemotion.tyr.creator.dto.question.SimpleElementQuestionDto
 import ch.sourcemotion.tyr.creator.ext.ack
 import ch.sourcemotion.tyr.creator.ext.newUUID
@@ -31,7 +31,7 @@ import org.junit.jupiter.api.Test
 class QuizCategoryResourceTest : AbstractVertxTest(), VertxWebTest {
 
     private companion object {
-        val json = jsonSerialization()
+        val json = jsonDtoSerialization()
 
         const val LOCAL_HOST = "localhost"
 

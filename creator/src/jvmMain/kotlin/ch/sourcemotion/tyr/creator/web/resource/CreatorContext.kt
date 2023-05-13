@@ -1,6 +1,6 @@
 package ch.sourcemotion.tyr.creator.web.resource
 
-import ch.sourcemotion.tyr.creator.dto.jsonSerialization
+import ch.sourcemotion.tyr.creator.dto.jsonDtoSerialization
 import ch.sourcemotion.tyr.creator.web.resource.exception.BadRequestException
 import io.netty.handler.codec.http.HttpResponseStatus
 import io.vertx.core.Vertx
@@ -13,7 +13,7 @@ import mu.KLogging
 class CreatorContext(
     private val vertx: Vertx,
     private val scope: CoroutineScope,
-    private val json: Json = jsonSerialization()
+    private val json: Json = jsonDtoSerialization()
 ) : CoroutineScope by scope {
 
     private companion object : KLogging()

@@ -3,7 +3,7 @@ package ch.sourcemotion.tyr.creator.web.resource
 import ch.sourcemotion.tyr.creator.domain.service.QuizStageService
 import ch.sourcemotion.tyr.creator.domain.service.QuizStageService.*
 import ch.sourcemotion.tyr.creator.dto.QuizStageDto
-import ch.sourcemotion.tyr.creator.dto.jsonSerialization
+import ch.sourcemotion.tyr.creator.dto.jsonDtoSerialization
 import ch.sourcemotion.tyr.creator.ext.asUtf8String
 import ch.sourcemotion.tyr.creator.ext.onFailureAndRethrow
 import ch.sourcemotion.tyr.creator.logging.mdcOf
@@ -23,7 +23,7 @@ class QuizStagesResource(
     vertx: Vertx,
     scope: CoroutineScope,
     private val quizIdKey: String,
-    json: Json = jsonSerialization()
+    json: Json = jsonDtoSerialization()
 ) :
     AbstractResource(vertx, scope, json) {
 
@@ -74,7 +74,10 @@ class QuizStagesResource(
             rc.withExceptionHandling(mdcOf(quizId)) {
                 val quizStageDtos = service.runCatching { getQuizStages(GetQuizStagesQuery(quizId, withCategories)) }
                     .onFailureAndRethrow { failure -> logger.error(failure) { "Failed to get quiz stages" } }
-                rc.response().setStatusCode(HttpResponseStatus.OK.code()).end(json.encodeToString(quizStageDtos))
+                rc.response()
+                    .appJsonContentType()
+                    .setStatusCode(HttpResponseStatus.OK.code())
+                    .end(json.encodeToString(quizStageDtos))
             }
         }
     }
@@ -91,7 +94,10 @@ class QuizStagesResource(
                 val quizStageDto = service.runCatching { getQuizStage(GetQuizStageQuery(quizStageId, withCategories)) }
                     .onFailureAndRethrow { failure -> logger.error(failure) { "Failed to get quiz stage" } }
                 if (quizStageDto != null) {
-                    rc.response().setStatusCode(HttpResponseStatus.OK.code()).end(json.encodeToString(quizStageDto))
+                    rc.response()
+                        .appJsonContentType()
+                        .setStatusCode(HttpResponseStatus.OK.code())
+                        .end(json.encodeToString(quizStageDto))
                 } else {
                     rc.response().setStatusCode(HttpResponseStatus.NOT_FOUND.code())
                         .setStatusMessage("Quiz stage for id '$quizStageId' not found")

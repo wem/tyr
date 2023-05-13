@@ -5,7 +5,7 @@ import ch.sourcemotion.tyr.creator.dto.QuizCategoryDto
 import ch.sourcemotion.tyr.creator.dto.QuizDto
 import ch.sourcemotion.tyr.creator.dto.QuizStageDto
 import ch.sourcemotion.tyr.creator.dto.element.TextDto
-import ch.sourcemotion.tyr.creator.dto.jsonSerialization
+import ch.sourcemotion.tyr.creator.dto.jsonDtoSerialization
 import ch.sourcemotion.tyr.creator.dto.question.SimpleElementQuestionDto
 import ch.sourcemotion.tyr.creator.ext.ack
 import ch.sourcemotion.tyr.creator.ext.newUUID
@@ -39,7 +39,7 @@ import java.util.*
 class QuizzesResourceTest : AbstractVertxTest(), VertxWebTest {
 
     private companion object {
-        val json = jsonSerialization()
+        val json = jsonDtoSerialization()
 
         const val LOCAL_HOST = "localhost"
 

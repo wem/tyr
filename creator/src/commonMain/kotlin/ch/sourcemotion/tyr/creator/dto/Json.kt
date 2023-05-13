@@ -16,4 +16,4 @@ private val dtoModule = SerializersModule {
     }
 }
 
-fun jsonSerialization(): Json = Json { serializersModule = dtoModule }
+fun jsonDtoSerialization(): Json = Json { serializersModule = dtoModule }

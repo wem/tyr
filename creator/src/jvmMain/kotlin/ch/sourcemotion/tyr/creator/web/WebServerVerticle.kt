@@ -3,6 +3,7 @@ package ch.sourcemotion.tyr.creator.web
 import ch.sourcemotion.tyr.creator.VerticleWithOptions
 import ch.sourcemotion.tyr.creator.config.WebServerConfig
 import ch.sourcemotion.tyr.creator.web.resource.CreatorContext
+import io.vertx.core.http.HttpMethod.*
 import io.vertx.ext.web.Router
 import io.vertx.ext.web.handler.BodyHandler
 import io.vertx.ext.web.handler.CorsHandler
@@ -21,7 +22,11 @@ class WebServerVerticle : VerticleWithOptions<WebServerConfig>(WebServerConfig::
         val mainRouter = Router.router(vertx)
         mainRouter.route().handler(BodyHandler.create(true).setUploadsDirectory(options.fileUploadFolder))
         if (options.develMode) {
-            mainRouter.route().handler(CorsHandler.create())
+            mainRouter.route().handler(CorsHandler.create()
+                .allowedMethod(GET)
+                .allowedMethod(PUT)
+                .allowedMethod(DELETE)
+            )
             logger.info { "CORS enabled" }
         }
         CreatorContext(vertx, this).deploy(mainRouter)

@@ -3,7 +3,7 @@ package ch.sourcemotion.tyr.creator.web.resource
 import ch.sourcemotion.tyr.creator.domain.service.QuizService
 import ch.sourcemotion.tyr.creator.domain.service.QuizService.*
 import ch.sourcemotion.tyr.creator.dto.QuizDto
-import ch.sourcemotion.tyr.creator.dto.jsonSerialization
+import ch.sourcemotion.tyr.creator.dto.jsonDtoSerialization
 import ch.sourcemotion.tyr.creator.ext.asUtf8String
 import ch.sourcemotion.tyr.creator.ext.onFailureAndRethrow
 import ch.sourcemotion.tyr.creator.logging.mdcOf
@@ -19,7 +19,7 @@ import kotlinx.serialization.json.Json
 import mu.KLogging
 import java.util.*
 
-class QuizzesResource(vertx: Vertx, scope: CoroutineScope, json: Json = jsonSerialization()) :
+class QuizzesResource(vertx: Vertx, scope: CoroutineScope, json: Json = jsonDtoSerialization()) :
     AbstractResource(vertx, scope, json) {
 
     private companion object : KLogging() {
@@ -63,7 +63,10 @@ class QuizzesResource(vertx: Vertx, scope: CoroutineScope, json: Json = jsonSeri
             rc.withExceptionHandling {
                 val quizDtos = service.runCatching { getQuizzes(GetQuizzesQuery(withStages, withCategories)) }
                     .onFailureAndRethrow { failure -> logger.error(failure) { "Failed to get quizzes" } }
-                rc.response().setStatusCode(HttpResponseStatus.OK.code()).end(json.encodeToString(quizDtos))
+                rc.response()
+                    .appJsonContentType()
+                    .setStatusCode(HttpResponseStatus.OK.code())
+                    .end(json.encodeToString(quizDtos))
             }
         }
     }
@@ -81,7 +84,9 @@ class QuizzesResource(vertx: Vertx, scope: CoroutineScope, json: Json = jsonSeri
                 val quizDto = service.runCatching { getQuiz(GetQuizQuery(quizId, withStages, withCategories)) }
                     .onFailureAndRethrow { failure -> logger.error(failure) { "Failed to get quiz" } }
                 if (quizDto != null) {
-                    rc.response().setStatusCode(HttpResponseStatus.OK.code())
+                    rc.response()
+                        .appJsonContentType()
+                        .setStatusCode(HttpResponseStatus.OK.code())
                         .end(json.encodeToString(QuizDto.serializer(), quizDto))
                 } else {
                     rc.response().setStatusCode(HttpResponseStatus.NOT_FOUND.code())
