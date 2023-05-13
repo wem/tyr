@@ -1,0 +1,13 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="Creator" type="JetRunConfigurationType">
+    <envs>
+      <env name="CREATOR_CONFIG_PATH" value="$PROJECT_DIR$/creator/local-config/local.yaml" />
+    </envs>
+    <option name="MAIN_CLASS_NAME" value="ch.sourcemotion.tyr.creator.CreatorMain" />
+    <module name="tyr.creator.jvmMain" />
+    <shortenClasspath name="NONE" />
+    <method v="2">
+      <option name="Make" enabled="true" />
+    </method>
+  </configuration>
+</component>
