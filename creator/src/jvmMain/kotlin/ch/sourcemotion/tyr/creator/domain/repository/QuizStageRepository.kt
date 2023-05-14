@@ -29,7 +29,8 @@ class QuizStageRepository(pool: PgPool) : AbstractRepository(pool) {
 
         const val DELETE_QUERY = "DELETE FROM $TABLE WHERE $ID_COLUMN = #{$ID_COLUMN}"
 
-        const val FIND_ALL_OF_QUIZ_QUERY = "SELECT $SELECT_COLUMNS_EXP FROM $TABLE qs"
+        const val FIND_ALL_OF_QUIZ_QUERY = "SELECT $SELECT_COLUMNS_EXP FROM $TABLE qs " +
+                "WHERE qs.$QUIZ_FK_COLUMN = #{$QUIZ_FK_COLUMN}"
 
         const val FIND_BY_ID_QUERY = "SELECT $SELECT_COLUMNS_EXP FROM $TABLE qs " +
                 "WHERE $ID_COLUMN = #{$ID_COLUMN}"

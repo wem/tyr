@@ -6,6 +6,7 @@ import ch.sourcemotion.tyr.creator.domain.entity.QuizStage
 import ch.sourcemotion.tyr.creator.ext.getOrCreateByFactory
 import ch.sourcemotion.tyr.creator.testing.AbstractVertxDatabaseTest
 import io.kotest.assertions.asClue
+import io.kotest.matchers.collections.shouldBeEmpty
 import io.kotest.matchers.collections.shouldContainExactlyInAnyOrder
 import io.kotest.matchers.nulls.shouldBeNull
 import io.kotest.matchers.nulls.shouldNotBeNull
@@ -56,6 +57,7 @@ class QuizStageRepositoryTest : AbstractVertxDatabaseTest() {
     @Test
     fun `find all of quiz`(testContext: VertxTestContext) = testContext.async {
         val quiz = saveDummyQuiz()
+        val anotherQuiz = saveDummyQuiz()
 
         val stages = sut.withTx {
             (1..10).map { number ->
@@ -66,6 +68,8 @@ class QuizStageRepositoryTest : AbstractVertxDatabaseTest() {
         }
 
         sut.findAllOfQuiz(quiz.id).shouldContainExactlyInAnyOrder(stages)
+
+        sut.findAllOfQuiz(anotherQuiz.id).shouldBeEmpty()
     }
 
     @Test

@@ -13,6 +13,7 @@ import ch.sourcemotion.tyr.creator.domain.entity.question.element.Sound
 import ch.sourcemotion.tyr.creator.domain.entity.question.element.textOf
 import ch.sourcemotion.tyr.creator.ext.getOrCreateByFactory
 import ch.sourcemotion.tyr.creator.testing.AbstractVertxDatabaseTest
+import io.kotest.matchers.collections.shouldBeEmpty
 import io.kotest.matchers.collections.shouldContainExactlyInAnyOrder
 import io.kotest.matchers.nulls.shouldBeNull
 import io.kotest.matchers.shouldBe
@@ -114,6 +115,7 @@ class QuizCategoryRepositoryTest : AbstractVertxDatabaseTest() {
     fun `find all of stage`(testContext: VertxTestContext) = testContext.async {
         val question = SimpleElementQuestion(textOf("Question text"), textOf("Answer"))
         val (_, quizStage) = saveDummyQuizAndStage()
+        val (_, anotherStage) = saveDummyQuizAndStage()
 
         val categories = sut.withTx { conn ->
             (1..10).map { number ->
@@ -128,6 +130,7 @@ class QuizCategoryRepositoryTest : AbstractVertxDatabaseTest() {
         }
 
         sut.findAllOfStage(quizStage.id).shouldContainExactlyInAnyOrder(categories)
+        sut.findAllOfStage(anotherStage.id).shouldBeEmpty()
     }
 
     private fun newJpeg() = Image(UUID.randomUUID(), MimeType.JPEG, "Image description")
