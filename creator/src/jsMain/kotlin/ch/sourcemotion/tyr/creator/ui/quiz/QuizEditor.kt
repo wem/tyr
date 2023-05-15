@@ -18,6 +18,7 @@ import mui.material.styles.TypographyVariant
 import mui.system.sx
 import react.*
 import react.dom.onChange
+import react.router.useOutletContext
 import react.router.useParams
 import web.cssom.pct
 import web.cssom.px
@@ -31,18 +32,16 @@ val QuizEditor = FC<Props> {
     var quiz by useState<QuizDto>()
     var loading by useState(true)
 
+    val globalMessageTrigger = useOutletContext<GlobalMessageTrigger>()
+
     var showNewStageCreator by useState(false)
 
-    var pendingAlerts by useState(listOf<AlertSpec>())
     var currentShortMessage by useState<ShortMessageSpec>()
 
     val currentQuizId = { quizIfOf(params) }
 
     val showError = { title: String, description: String ->
-        pendingAlerts = pendingAlerts + AlertSpec(title, description, AlertColor.error) { acknowledgedAlert ->
-            pendingAlerts = pendingAlerts.toMutableList().apply { remove(acknowledgedAlert) }.toList()
-            println(pendingAlerts.size)
-        }
+        globalMessageTrigger.showMessage(GlobalMessage(title, description, GlobalMessage.Severity.ERROR))
     }
 
     val executeWithLoader = { onFailure: (Throwable) -> Unit, block: suspend () -> Unit ->
@@ -93,10 +92,6 @@ val QuizEditor = FC<Props> {
             rowFlow()
             centeredGridElements()
             rowGap = 16.px
-        }
-
-        Alerts {
-            alerts = pendingAlerts
         }
 
         quiz?.let { loadedQuiz ->

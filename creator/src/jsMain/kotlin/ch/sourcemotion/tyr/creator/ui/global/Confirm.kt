@@ -21,7 +21,6 @@ val Confirm = FC<ConfirmProps> { props ->
         open = props.spec?.show ?: false
 
         onClose = { _, _ ->
-            println("on close")
             props.onCancel?.invoke()
         }
 

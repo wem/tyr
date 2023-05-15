@@ -9,6 +9,23 @@ import react.FC
 import react.Props
 import web.cssom.*
 
+data class GlobalMessage(
+    val title: String,
+    val description: String,
+    val severity: GlobalMessage.Severity
+) {
+    enum class Severity(val color: AlertColor) {
+        SUCCESS(AlertColor.success),
+        INFO(AlertColor.info),
+        WARN(AlertColor.warning),
+        ERROR(AlertColor.error)
+    }
+}
+
+fun interface GlobalMessageTrigger {
+    fun showMessage(message: GlobalMessage)
+}
+
 data class AlertSpec(
     val title: String,
     val description: String,
