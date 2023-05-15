@@ -27,15 +27,15 @@ val NewQuizCreator = FC<NewQuizCreatorProps> { props ->
 
     val nav = useNavigate()
 
-    var openNewQuizDialog by useState(false)
+    var showNewQuizDialog by useState(false)
     var newQuizDateRaw by useState("")
 
     useEffect {
-        openNewQuizDialog = props.show
+        showNewQuizDialog = props.show
     }
 
     Dialog {
-        open = openNewQuizDialog
+        open = showNewQuizDialog
         onClose = { _, _ ->
             props.onClose()
         }

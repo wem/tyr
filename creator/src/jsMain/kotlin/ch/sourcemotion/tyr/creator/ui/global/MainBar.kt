@@ -1,5 +1,6 @@
 package ch.sourcemotion.tyr.creator.ui.global
 
+import ch.sourcemotion.tyr.creator.ui.quiz.ExistingQuizChooser
 import ch.sourcemotion.tyr.creator.ui.quiz.NewQuizCreator
 import mui.icons.material.Edit
 import mui.icons.material.FileOpen
@@ -15,7 +16,8 @@ import web.cssom.px
 
 val MainBar = FC<Props> {
 
-    var showNewQuizStarter by useState(false)
+    var showNewQuizCreator by useState(false)
+    var showExistingQuizChooser by useState(false)
 
     AppBar {
         position = AppBarPosition.static
@@ -40,7 +42,7 @@ val MainBar = FC<Props> {
                     SpeedDialIcon()
 
                     onClick = {
-                        showNewQuizStarter = true
+                        showNewQuizCreator = true
                     }
                 }
             }
@@ -54,6 +56,10 @@ val MainBar = FC<Props> {
                     color = IconButtonColor.inherit
 
                     Edit()
+
+                    onClick = {
+                        showExistingQuizChooser = true
+                    }
                 }
             }
 
@@ -76,10 +82,19 @@ val MainBar = FC<Props> {
         }
     }
 
+    // TODO Global / central failure visualisation
+
     NewQuizCreator {
-        show = showNewQuizStarter
+        show = showNewQuizCreator
         onClose = {
-            showNewQuizStarter = false
+            showNewQuizCreator = false
+        }
+    }
+
+    ExistingQuizChooser {
+        show = showExistingQuizChooser
+        onClose = {
+            showExistingQuizChooser = false
         }
     }
 }
