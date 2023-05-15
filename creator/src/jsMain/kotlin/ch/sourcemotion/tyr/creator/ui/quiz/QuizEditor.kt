@@ -149,7 +149,7 @@ val QuizEditor = FC<Props> {
                                     .onSuccess {
                                         // We show the deletion success independent of the quiz reload success or fail
                                         currentShortMessage = ShortMessageSpec("Quiz Seite '${stageToDelete.number}' " +
-                                                "erfolgreich geladen / zurückgesetzt", SUCCESS)
+                                                "erfolgreich gelöscht", SUCCESS)
 
                                         runCatching { quiz = rest.quizzes.get(loadedQuiz.id, withStages = true, withCategories = true) }
                                             .onFailure {
