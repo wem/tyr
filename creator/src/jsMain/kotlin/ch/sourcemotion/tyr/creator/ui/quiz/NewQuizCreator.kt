@@ -21,7 +21,7 @@ external interface NewQuizCreatorProps : Props {
     var onClose: () -> Unit
 }
 
-private val logger = KotlinLogging.logger("NewQuizStarter")
+private val logger = KotlinLogging.logger("NewQuizCreator")
 
 val NewQuizCreator = FC<NewQuizCreatorProps> { props ->
 
@@ -70,8 +70,6 @@ val NewQuizCreator = FC<NewQuizCreatorProps> { props ->
                             launch {
                                 runCatching { rest.quizzes.put(QuizDto(newQuizId, newQuizDate)) }
                                     .onSuccess {
-                                        println("Nav to new quiz")
-
                                         props.onClose()
                                         navigate(nav, newQuizId)
                                     }.onFailure { logger.error(it) { "Unable to create new quiz" } }

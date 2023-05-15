@@ -1,22 +1,26 @@
 package ch.sourcemotion.tyr.creator.ui.quiz
 
 import ch.sourcemotion.tyr.creator.dto.QuizDto
-import ch.sourcemotion.tyr.creator.ui.QUIZ_NAV_PARAM
 import ch.sourcemotion.tyr.creator.ui.coroutine.launch
+import ch.sourcemotion.tyr.creator.ui.ext.centeredGridElements
+import ch.sourcemotion.tyr.creator.ui.ext.rowFlow
 import ch.sourcemotion.tyr.creator.ui.global.*
 import ch.sourcemotion.tyr.creator.ui.global.FabKind.*
 import ch.sourcemotion.tyr.creator.ui.global.ShortMessageSeverity.SUCCESS
+import ch.sourcemotion.tyr.creator.ui.quizIfOf
 import ch.sourcemotion.tyr.creator.ui.rest.rest
-import com.benasher44.uuid.uuidFrom
+import ch.sourcemotion.tyr.creator.ui.stage.NewQuizStageCreator
 import js.core.jso
 import kotlinx.datetime.LocalDate
 import mu.KotlinLogging
 import mui.material.*
+import mui.material.styles.TypographyVariant
 import mui.system.sx
 import react.*
 import react.dom.onChange
 import react.router.useParams
-import web.cssom.*
+import web.cssom.pct
+import web.cssom.px
 import web.html.InputType
 
 private val logger = KotlinLogging.logger("QuizEditor")
@@ -27,10 +31,12 @@ val QuizEditor = FC<Props> {
     var quiz by useState<QuizDto>()
     var loading by useState(true)
 
+    var showNewStageCreator by useState(false)
+
     var pendingAlerts by useState(listOf<AlertSpec>())
     var currentShortMessage by useState<ShortMessageSpec>()
 
-    val currentQuizId = { uuidFrom("${params[QUIZ_NAV_PARAM]}") }
+    val currentQuizId = { quizIfOf(params) }
 
     val showError = { title: String, description: String ->
         pendingAlerts = pendingAlerts + AlertSpec(title, description, AlertColor.error) { acknowledgedAlert ->
@@ -53,14 +59,18 @@ val QuizEditor = FC<Props> {
         val quizId = currentQuizId()
         executeWithLoader({ failure ->
             logger.error(failure) { "Failed to load quiz '$quizId'" }
-            showError("Fehler beim Laden", "Quiz konnte nicht geladen werden, vielleicht existiert es nicht mehr?. Versuche es noch einmal zu öffnen.")
+            showError(
+                LOAD_FAILURE_TITLE,
+                "Quiz konnte nicht geladen werden, vielleicht existiert es nicht mehr?. Versuche es noch einmal zu öffnen."
+            )
         }) {
-            quiz = rest.quizzes.get(quizId)
+            quiz = rest.quizzes.get(quizId, withStages = true, withCategories = true)
             currentShortMessage = ShortMessageSpec("Quiz erfolgreich geladen / zurückgesetzt", SUCCESS)
         }
     }
 
     useEffectOnce {
+        logger.debug { "Quiz edit for quiz '${currentQuizId()} loaded'" }
         loadQuiz()
     }
 
@@ -80,9 +90,8 @@ val QuizEditor = FC<Props> {
         container = true
         sx {
             width = 80.pct
-            gridAutoFlow = GridAutoFlow.row
-            justifyContent = JustifyContent.center
-            alignItems = AlignItems.center
+            rowFlow()
+            centeredGridElements()
             rowGap = 16.px
         }
 
@@ -97,13 +106,12 @@ val QuizEditor = FC<Props> {
             }
         }
 
-        if (quiz != null) {
+        quiz?.let { loadedQuiz ->
             TextField {
-                id = "quiz-date"
                 label = ReactNode("Quiz Datum")
                 variant = FormControlVariant.outlined
                 type = InputType.date
-                value = quiz?.date?.toString() ?: ""
+                value = loadedQuiz.date.toString()
                 InputLabelProps = jso {
                     shrink = true
                 }
@@ -111,9 +119,68 @@ val QuizEditor = FC<Props> {
                     quiz = quiz?.copy(date = LocalDate.parse(it.target.asDynamic().value))
                 }
             }
+
+            Grid {
+                container = true
+                sx {
+                    centeredGridElements()
+                    width = 100.pct
+                }
+                Typography {
+                    variant = TypographyVariant.h2
+                    +"Seiten"
+                }
+            }
+
+            Grid {
+                container = true
+                sx {
+                    rowFlow()
+                    centeredGridElements()
+                    rowGap = 16.px
+                    columnGap = 16.px
+                }
+                loadedQuiz.stages.sortedBy { it.number }.forEach { stage ->
+                    QuizStageCard {
+                        quizStage = stage
+                        onDelete = { stageToDelete ->
+                            launch {
+                                runCatching { rest.stages.delete(stageToDelete.id) }
+                                    .onSuccess {
+                                        // We show the deletion success independent of the quiz reload success or fail
+                                        currentShortMessage = ShortMessageSpec("Quiz Seite '${stageToDelete.number}' " +
+                                                "erfolgreich geladen / zurückgesetzt", SUCCESS)
+
+                                        runCatching { quiz = rest.quizzes.get(loadedQuiz.id, withStages = true, withCategories = true) }
+                                            .onFailure {
+                                                showError(
+                                                    LOAD_FAILURE_TITLE,
+                                                    "Quiz konnte nach dem löschen der Seite nicht aktualisiert werden. Deine Ansicht ist nicht mehr aktuell. " +
+                                                            "Bitte lade die App neu."
+                                                )
+                                            }
+                                    }.onFailure {
+                                        showError(
+                                            "Fehler beim löschen der Seite '${stageToDelete.number}'",
+                                            "Quiz Seite '${stageToDelete.number}' konnte nicht gelöscht werden. Versuche es noch einmal."
+                                        )
+                                    }
+                            }
+                        }
+                    }
+                }
+            }
         }
     }
 
+    NewQuizStageCreator {
+        show = showNewStageCreator
+        quizId = currentQuizId()
+        onClose = { showNewStageCreator = false }
+        onFailure = { msg ->
+            showError("Fehler beim erstellen der Quizseite", msg)
+        }
+    }
 
     FloatingButtons {
         fabs = listOf(
@@ -130,16 +197,9 @@ val QuizEditor = FC<Props> {
                     }
                 }
             },
-            FabSpec("Quiz zurücksetzen", FabColor.warning, RESET) {
-                loadQuiz()
-                showError("Fehler beim Laden", "Quiz konnte nicht geladen werden. Versuche es noch einmal zu öffnen.")
-            },
+            FabSpec("Quiz zurücksetzen", FabColor.warning, RESET) { loadQuiz() },
             FabSpec("Quiz Seite erstellen", FabColor.inherit, NEW) {
-                quiz?.let { quizToSave ->
-                    executeWithLoader({ failure -> logger.error(failure) { "Failed to save quiz '$${quizToSave.id}'" } }) {
-                        rest.quizzes.put(quizToSave)
-                    }
-                }
+                showNewStageCreator = true
             },
         )
     }

@@ -61,13 +61,18 @@ val MainBar = FC<Props> {
                 title = ReactNode("Dateien bearbeiten (Bilder, Filme, Musik)")
 
                 IconButton {
-                    sx { marginLeft = 8.px }
+                    sx {
+                        marginLeft = 8.px
+                        marginRight = 32.px
+                    }
 
                     color = IconButtonColor.inherit
 
                     FileOpen()
                 }
             }
+
+            BreadCrumbs()
         }
     }
 

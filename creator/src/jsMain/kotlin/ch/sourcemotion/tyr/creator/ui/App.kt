@@ -31,23 +31,19 @@ private val browserRouter = createBrowserRouter(
                     path = ":$QUIZ_NAV_PARAM"
                     Component = QuizEditor
                     ErrorBoundary = Error
-                    children = arrayOf(
-                        jso {
-                            path = ":$QUIZ_STAGE_NAV_PARAM"
-                            Component = QuizStageEditor
-                            ErrorBoundary = Error
-                            children = arrayOf(
-                                jso {
-                                    path = ":$QUIZ_CATEGORY_NAV_PARAM"
-                                    Component = QuizCategoryEditor
-                                    ErrorBoundary = Error
-                                }
-                            )
-                        }
-                    )
+                },
+                jso {
+                    path = "/:$QUIZ_NAV_PARAM/:$QUIZ_STAGE_NAV_PARAM"
+                    Component = QuizStageEditor
+                    ErrorBoundary = Error
+                },
+                jso {
+                    path = "/:$QUIZ_NAV_PARAM/:$QUIZ_STAGE_NAV_PARAM/:$QUIZ_CATEGORY_NAV_PARAM"
+                    Component = QuizCategoryEditor
+                    ErrorBoundary = Error
                 }
             )
-        },
+        }
     )
 )
 

@@ -93,10 +93,10 @@ class QuizStages(private val baseUrl: String, private val restClient: HttpClient
         }.getOrElse { failure -> throw RestException("Failed to delete quiz stage '$quizStageId'", failure) }
     }
 
-    suspend fun getAll(quizId: Uuid, withCategories: Boolean = false): List<QuizDto> {
+    suspend fun getAll(quizId: Uuid, withCategories: Boolean = false): List<QuizStageDto> {
         return runCatching { restClient.get("$baseUrl/quizzes/$quizId/stages"){
             url { parameters.append("withCategories", "$withCategories") }
-        }.body<List<QuizDto>>() }
+        }.body<List<QuizStageDto>>() }
             .getOrElse { failure -> throw RestException("Failed to query all quiz stages of quiz '$quizId'", failure) }
     }
 
