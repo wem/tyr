@@ -99,13 +99,6 @@ val QuizEditor = FC<Props> {
             alerts = pendingAlerts
         }
 
-        ShortMessage {
-            messageSpec = currentShortMessage
-            onClose = {
-                currentShortMessage = null
-            }
-        }
-
         quiz?.let { loadedQuiz ->
             TextField {
                 label = ReactNode("Quiz Datum")
@@ -120,15 +113,15 @@ val QuizEditor = FC<Props> {
                 }
             }
 
-            Grid {
-                container = true
+            Box {
                 sx {
-                    centeredGridElements()
                     width = 100.pct
                 }
-                Typography {
-                    variant = TypographyVariant.h2
-                    +"Seiten"
+                Divider {
+                    Typography {
+                        variant = TypographyVariant.h4
+                        +"Seiten"
+                    }
                 }
             }
 
@@ -179,6 +172,13 @@ val QuizEditor = FC<Props> {
         onClose = { showNewStageCreator = false }
         onFailure = { msg ->
             showError("Fehler beim erstellen der Quizseite", msg)
+        }
+    }
+
+    ShortMessage {
+        messageSpec = currentShortMessage
+        onClose = {
+            currentShortMessage = null
         }
     }
 
