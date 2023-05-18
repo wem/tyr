@@ -84,14 +84,25 @@ class QuizStageServiceVerticleTest : AbstractServiceVerticleTest() {
     fun `get quiz stage - success`(testContext: VertxTestContext) = testContext.async {
         val quizStageToGet = quizJuly.stages.first()
 
+        val findByIdCheckpoint = testContext.checkpoint()
+        val findByIdWithCategoriesCheckpoint = testContext.checkpoint()
+
         vertx.shareFactory {
             mockk<QuizStageRepository> {
-                coEvery { findById(quizStageToGet.id) } returns quizStageToGet
+                coEvery { findById(quizStageToGet.id) } answers  {
+                    findByIdCheckpoint.flag()
+                    quizStageToGet
+                }
+                coEvery { findByIdWithCategories(quizStageToGet.id) } answers {
+                    findByIdWithCategoriesCheckpoint.flag()
+                    quizStageToGet
+                }
             }
         }
 
         deploySut()
 
+        sutClient.getQuizStage(GetQuizStageQuery(quizStageToGet.id, false)).shouldBe(quizStageToGet.toDto())
         sutClient.getQuizStage(GetQuizStageQuery(quizStageToGet.id, true)).shouldBe(quizStageToGet.toDto())
     }
 
@@ -102,6 +113,7 @@ class QuizStageServiceVerticleTest : AbstractServiceVerticleTest() {
         vertx.shareFactory {
             mockk<QuizStageRepository> {
                 coEvery { findById(quizStageToGet.id) } throws QuizStageRepositoryException("test failure")
+                coEvery { findByIdWithCategories(quizStageToGet.id) } throws QuizStageRepositoryException("test failure")
             }
         }
 
@@ -109,6 +121,10 @@ class QuizStageServiceVerticleTest : AbstractServiceVerticleTest() {
 
         shouldThrow<QuizStageServiceException> {
             sutClient.getQuizStage(GetQuizStageQuery(quizStageToGet.id, true)).shouldBe(quizStageToGet.toDto())
+        }.cause.shouldBeInstanceOf<QuizStageRepositoryException>()
+
+        shouldThrow<QuizStageServiceException> {
+            sutClient.getQuizStage(GetQuizStageQuery(quizStageToGet.id, false)).shouldBe(quizStageToGet.toDto())
         }.cause.shouldBeInstanceOf<QuizStageRepositoryException>()
     }
 
@@ -129,8 +145,6 @@ class QuizStageServiceVerticleTest : AbstractServiceVerticleTest() {
 
     @Test
     fun `get quiz stages - repo failure`(testContext: VertxTestContext) = testContext.async {
-        val quizStagesToGet = quizJune.stages
-
         vertx.shareFactory {
             mockk<QuizStageRepository> {
                 coEvery { findAllOfQuiz(quizJune.id) } throws QuizStageRepositoryException("test failure")
