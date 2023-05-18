@@ -49,7 +49,7 @@ class QuizStageRepositoryTest : AbstractVertxDatabaseTest() {
         sut.save(quiz.id, stage)
         sut.findById(stage.id).shouldBe(stage)
 
-        val updatedStage = stage.copy(number = 2, description = "New description")
+        val updatedStage = stage.copy(orderNumber = 2, description = "New description")
         sut.save(quiz.id, updatedStage)
         sut.findById(stage.id).shouldBe(updatedStage)
     }

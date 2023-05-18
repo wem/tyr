@@ -5,9 +5,9 @@ import ch.sourcemotion.tyr.creator.dto.QuizStageDto
 
 object QuizStageMapper : Mapper<QuizStage, QuizStageDto> {
     override fun mapToDto(entity: QuizStage) =
-        QuizStageDto(entity.id, entity.number, entity.description, entity.categories.toDtos())
+        QuizStageDto(entity.id, entity.orderNumber, entity.description, entity.categories.toDtos())
 
-    override fun mapToEntity(dto: QuizStageDto) = QuizStage(dto.id, dto.number, dto.description, dto.categories.toEntities())
+    override fun mapToEntity(dto: QuizStageDto) = QuizStage(dto.id, dto.orderNumber, dto.description, dto.categories.toEntities())
 }
 
 fun QuizStage.toDto() = QuizStageMapper.mapToDto(this)

@@ -53,6 +53,13 @@ val NewQuizCategoryCreator = FC<NewQuizCategoryCreatorProps> { props ->
         valid = newQuizCategoryTitleValidationMessage == null && newQuizCategoryContextTextValidationMessage == null
     }
 
+    val showCreationFailure = {
+        props.globalMessageTrigger.showError(
+            SAVE_FAILURE_TITLE,
+            "Kategorie konnte nicht erstellt werden. Bitte versuche es erneut."
+        )
+    }
+
     useEffect {
         openNewQuizCategoryDialog = props.show
     }
@@ -140,39 +147,34 @@ val NewQuizCategoryCreator = FC<NewQuizCategoryCreatorProps> { props ->
                     onClick = {
                         val newQuizCategoryId = uuid4()
                         launch {
-                            runCatching { rest.categories.getAll(props.parentQuizStageId) }
-                                .onFailure {
-                                    props.globalMessageTrigger.showError(
-                                        LOAD_FAILURE_TITLE,
-                                        "Bestehende Kategorien konnten nicht geladen werden"
-                                    )
-                                }.onSuccess { existingCategories ->
-                                    val newCategoryNumber = if (existingCategories.isEmpty()) {
-                                        1
-                                    } else {
-                                        existingCategories.map { it.number }.maxOf { it } + 1
-                                    }
+                            val nextCategoryOrderNumber = runCatching {
+                                val existingCategories = rest.categories.getAll(props.parentQuizStageId)
+                                if (existingCategories.isEmpty()) 0 else existingCategories.maxOf { it.orderNumber }
+                            }.getOrElse {
+                                logger.error(it) { "Failed to evaluate next category order number on quiz stage '${props.parentQuizStageId}'" }
+                                showCreationFailure()
+                                null
+                            }
 
-                                    runCatching {
-                                        val newCategory = QuizCategoryDto(
-                                            newQuizCategoryId,
-                                            newQuizCategoryTitle!!,
-                                            newCategoryNumber,
-                                            TextDto(newQuizCategoryContextText!!, newQuizCategoryContextDescription)
-                                        )
-                                        rest.categories.put(props.parentQuizStageId, newCategory)
-                                        logger.info { "New quiz category '$newCategoryNumber' created" }
-                                        navigate(nav, props.parentQuizId, props.parentQuizStageId, newQuizCategoryId)
-                                    }.onSuccess {
-                                        props.shortMessageTrigger.showSuccessMsg("Neue Kategorie '$newQuizCategoryTitle' erstellt")
-                                        props.onClose()
-                                    }.onFailure {
-                                        props.globalMessageTrigger.showError(
-                                            SAVE_FAILURE_TITLE,
-                                            "Kategorie konnte nicht erstellt werden. Bitte versuche es erneut."
-                                        )
-                                    }
+                            if (nextCategoryOrderNumber != null) {
+                                runCatching {
+                                    val newCategory = QuizCategoryDto(
+                                        newQuizCategoryId,
+                                        newQuizCategoryTitle!!,
+                                        nextCategoryOrderNumber,
+                                        TextDto(newQuizCategoryContextText!!, newQuizCategoryContextDescription)
+                                    )
+                                    rest.categories.put(props.parentQuizStageId, newCategory)
+                                }.onSuccess {
+                                    logger.info { "New quiz category '$newQuizCategoryTitle' created in quiz stage '${props.parentQuizStageId}'" }
+                                    navigate(nav, props.parentQuizId, props.parentQuizStageId, newQuizCategoryId)
+                                    props.shortMessageTrigger.showSuccessMsg("Neue Kategorie '$newQuizCategoryTitle' erstellt")
+                                    props.onClose()
+                                }.onFailure {
+                                    logger.error(it) { "Failed to create category on quiz stage '${props.parentQuizStageId}'" }
+                                    showCreationFailure()
                                 }
+                            }
                         }
                     }
                     +"Erstellen"

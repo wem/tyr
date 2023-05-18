@@ -110,9 +110,11 @@ val QuizStageEditor = FC<Props> {
                     columnGap = 16.px
                 }
 
-                loadedQuizStage.categories.sortedBy { it.number }.forEach { category ->
+                loadedQuizStage.categories.sortedBy { it.orderNumber }.forEachIndexed { idx, category ->
+                    val categoryNumber = idx + 1
                     QuizCategoryCard {
                         quizCategory = category
+                        this.categoryNumber = categoryNumber
                         onDelete = { categoryToDelete ->
                             launch {
                                 runCatching { rest.categories.delete(categoryToDelete.id) }

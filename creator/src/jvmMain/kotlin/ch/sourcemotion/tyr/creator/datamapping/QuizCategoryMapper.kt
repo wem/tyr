@@ -5,11 +5,11 @@ import ch.sourcemotion.tyr.creator.dto.QuizCategoryDto
 
 object QuizCategoryMapper : Mapper<QuizCategory, QuizCategoryDto> {
     override fun mapToDto(entity: QuizCategory) = QuizCategoryDto(
-        entity.id, entity.title, entity.number, entity.contextOrQuestionText.toDto(), entity.questions.toDtos()
+        entity.id, entity.title, entity.orderNumber, entity.contextOrQuestionText.toDto(), entity.questions.toDtos()
     )
 
     override fun mapToEntity(dto: QuizCategoryDto) =
-        QuizCategory(dto.id, dto.title, dto.number, dto.contextOrQuestionText.toEntity(), dto.questions.toEntities())
+        QuizCategory(dto.id, dto.title, dto.orderNumber, dto.contextOrQuestionText.toEntity(), dto.questions.toEntities())
 }
 
 fun QuizCategory.toDto() = QuizCategoryMapper.mapToDto(this)

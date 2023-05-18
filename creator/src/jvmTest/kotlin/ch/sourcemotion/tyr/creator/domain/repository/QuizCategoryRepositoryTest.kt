@@ -60,7 +60,7 @@ class QuizCategoryRepositoryTest : AbstractVertxDatabaseTest() {
 
         val updatedCategory = category.copy(
             title = "New title",
-            number = 2,
+            orderNumber = 2,
             contextOrQuestionText = textOf("New category question"),
             questions = category.questions + SimpleElementQuestion(
                 textOf("Another question text"),

@@ -17,9 +17,9 @@ data class QuizCategory(
     @JsonAlias(TITLE_QUERY_REF)
     val title: String,
 
-    @JsonProperty(NUMBER_COLUMN)
-    @JsonAlias(NUMBER_QUERY_REF)
-    val number: Int,
+    @JsonProperty(ORDER_NUMBER_COLUMN)
+    @JsonAlias(ORDER_NUMBER_QUERY_REF)
+    val orderNumber: Int,
 
     @JsonProperty(CONTEXT_OR_QUESTION_TEXT_COLUMN)
     @JsonAlias(CONTEXT_OR_QUESTION_TEXT_QUERY_REF)
@@ -34,7 +34,7 @@ data class QuizCategory(
 
         const val TITLE_COLUMN = "title"
         const val CONTEXT_OR_QUESTION_TEXT_COLUMN = "context_or_question_text"
-        const val NUMBER_COLUMN = "number"
+        const val ORDER_NUMBER_COLUMN = "order_number"
         const val QUESTIONS_COLUMN = "questions"
 
         const val STAGE_FK_COLUMN = "quiz_stage_id"
@@ -42,26 +42,26 @@ data class QuizCategory(
         const val ID_QUERY_REF = "qc_id"
         const val TITLE_QUERY_REF = "qc_title"
         const val CONTEXT_OR_QUESTION_TEXT_QUERY_REF = "qc_context_or_question_text"
-        const val NUMBER_QUERY_REF = "qc_number"
+        const val ORDER_NUMBER_QUERY_REF = "qc_order_number"
         const val QUESTIONS_QUERY_REF = "qc_questions"
 
         const val COLUMN_NAMES_EXP =
-            "$ID_COLUMN, $TITLE_COLUMN, $CONTEXT_OR_QUESTION_TEXT_COLUMN, $NUMBER_COLUMN, $QUESTIONS_COLUMN, $STAGE_FK_COLUMN"
+            "$ID_COLUMN, $TITLE_COLUMN, $CONTEXT_OR_QUESTION_TEXT_COLUMN, $ORDER_NUMBER_COLUMN, $QUESTIONS_COLUMN, $STAGE_FK_COLUMN"
 
         const val SELECT_COLUMNS_EXP =
             "qc.$ID_COLUMN AS $ID_QUERY_REF, " +
                     "qc.$TITLE_COLUMN AS $TITLE_QUERY_REF, " +
                     "qc.$CONTEXT_OR_QUESTION_TEXT_COLUMN AS $CONTEXT_OR_QUESTION_TEXT_QUERY_REF, " +
-                    "qc.$NUMBER_COLUMN AS $NUMBER_QUERY_REF, " +
+                    "qc.$ORDER_NUMBER_COLUMN AS $ORDER_NUMBER_QUERY_REF, " +
                     "qc.$QUESTIONS_COLUMN AS $QUESTIONS_QUERY_REF"
 
         const val INSERT_PARAMS_EXP =
-            "#{$ID_COLUMN}, #{$TITLE_COLUMN}, #{$CONTEXT_OR_QUESTION_TEXT_COLUMN}, #{$NUMBER_COLUMN}, " +
+            "#{$ID_COLUMN}, #{$TITLE_COLUMN}, #{$CONTEXT_OR_QUESTION_TEXT_COLUMN}, #{$ORDER_NUMBER_COLUMN}, " +
                     "#{$QUESTIONS_COLUMN}, #{$STAGE_FK_COLUMN}"
 
         const val UPDATE_SET_EXP = "$TITLE_COLUMN = #{$TITLE_COLUMN}, " +
                 "$CONTEXT_OR_QUESTION_TEXT_COLUMN = #{$CONTEXT_OR_QUESTION_TEXT_COLUMN}, " +
-                "$NUMBER_COLUMN = #{$NUMBER_COLUMN}, " +
+                "$ORDER_NUMBER_COLUMN = #{$ORDER_NUMBER_COLUMN}, " +
                 "$QUESTIONS_COLUMN = #{$QUESTIONS_COLUMN}"
 
         fun new(

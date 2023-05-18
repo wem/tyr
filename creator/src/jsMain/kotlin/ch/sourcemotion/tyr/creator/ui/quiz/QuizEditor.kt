@@ -109,11 +109,13 @@ val QuizEditor = FC<Props> {
                     rowGap = 16.px
                     columnGap = 16.px
                 }
-                loadedQuiz.stages.sortedBy { it.number }.forEach { stage ->
+                loadedQuiz.stages.sortedBy { it.orderNumber }.forEachIndexed { idx, stage ->
+                    val stageNumber = idx + 1
+
                     QuizStageCard {
+                        this.stageNumber = stageNumber
                         quizStage = stage
                         onChosen = {
-                            println("shjflskjfl")
                             navigate(nav, loadedQuiz.id, stage.id)
                         }
                         onDelete = { stageToDelete ->
@@ -122,7 +124,7 @@ val QuizEditor = FC<Props> {
                                     .onSuccess {
                                         // We show the deletion success independent of the quiz reload success or fail
                                         shortMsgTrigger.showSuccessMsg(
-                                            "Quiz Seite '${stageToDelete.number}' erfolgreich gelöscht"
+                                            "Quiz Seite '$stageNumber' erfolgreich gelöscht"
                                         )
 
                                         runCatching {
@@ -142,7 +144,7 @@ val QuizEditor = FC<Props> {
                                     }.onFailure {
                                         globalMsgTrigger.showError(
                                             DELETE_FAILURE_TITLE,
-                                            "Quiz Seite '${stageToDelete.number}' konnte nicht gelöscht werden. Versuche es noch einmal."
+                                            "Quiz Seite '$stageNumber' konnte nicht gelöscht werden. Versuche es noch einmal."
                                         )
                                     }
                             }
@@ -155,11 +157,10 @@ val QuizEditor = FC<Props> {
 
     NewQuizStageCreator {
         show = showNewStageCreator
-        quizId = currentQuizId()
+        parentQuizId = currentQuizId()
+        globalMessageTrigger = globalMsgTrigger
+        shortMessageTrigger = shortMsgTrigger
         onClose = { showNewStageCreator = false }
-        onFailure = { msg ->
-            globalMsgTrigger.showError("Fehler beim erstellen der Quizseite", msg)
-        }
     }
 
     FloatingButtons {

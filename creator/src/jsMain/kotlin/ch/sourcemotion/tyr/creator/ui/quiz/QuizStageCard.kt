@@ -13,6 +13,7 @@ import web.cssom.TextAlign
 
 external interface QuizStageCardProps : Props {
     var quizStage: QuizStageDto
+    var stageNumber: Int
     var onChosen: (QuizStageDto) -> Unit
     var onDelete: (QuizStageDto) -> Unit
 }
@@ -30,7 +31,7 @@ val QuizStageCard = FC<QuizStageCardProps>() { props ->
                     }
                     variant = TypographyVariant.h3
 
-                    +"${props.quizStage.number}"
+                    +"${props.stageNumber}"
                 }
                 CardContent {
                     Typography {
@@ -61,7 +62,7 @@ val QuizStageCard = FC<QuizStageCardProps>() { props ->
         spec = ConfirmSpec(
             showDeletionConfirm,
             "Quiz Seite wirklich löschen?",
-            "Soll die Quiz Seite mit der Nummer '${props.quizStage.number}' wirklich gelöscht werden?"
+            "Soll die Quiz Seite '${props.stageNumber}' wirklich gelöscht werden?"
         )
 
         onCancel = {

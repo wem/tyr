@@ -28,7 +28,7 @@ databaseChangeLog:
                     primaryKey: true
                     nullable: false
               - column:
-                  name: number
+                  name: order_number
                   type: integer
                   constraints:
                     nullable: false
@@ -63,7 +63,7 @@ databaseChangeLog:
                   constraints:
                     nullable: false
               - column:
-                  name: number
+                  name: order_number
                   type: integer
                   constraints:
                     nullable: false

@@ -9,7 +9,7 @@ import kotlinx.serialization.Serializable
 @SerialName("QuizStageDto")
 data class QuizStageDto(
     @Serializable(with = UuidSerializer::class)  val id: Uuid,
-    val number: Int,
+    val orderNumber: Int,
     val description: String?,
     val categories: List<QuizCategoryDto> = emptyList()
 )
