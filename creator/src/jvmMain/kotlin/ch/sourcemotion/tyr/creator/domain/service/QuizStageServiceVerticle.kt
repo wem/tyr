@@ -39,12 +39,17 @@ class QuizStageServiceVerticle : CoroutineVerticle(), QuizStageService {
     }
 
     override suspend fun getQuizStage(query: GetQuizStageQuery): QuizStageDto? {
-        return repo.runCatching { findById(query.id)?.toDto() }.getOrElse { failure ->
+        return repo.runCatching {
+            if (query.withCategories) {
+                findByIdWithCategories(query.id)?.toDto()
+            } else findById(query.id)?.toDto()
+        }.getOrElse { failure ->
             throw QuizStageServiceException("Failed to get quiz stage", failure)
         }
     }
 
     override suspend fun getQuizStages(query: GetQuizStagesQuery): List<QuizStageDto> {
+        // TODO: Make findAllOfQuiz consistent to query parameters for stages and categories
         return repo.runCatching { findAllOfQuiz(query.quizId).toDtos() }.getOrElse { failure ->
             throw QuizStageServiceException("Failed to get quiz stage", failure)
         }
