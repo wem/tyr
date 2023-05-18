@@ -5,7 +5,6 @@ import ch.sourcemotion.tyr.creator.ui.coroutine.launch
 import ch.sourcemotion.tyr.creator.ui.ext.centeredGridElements
 import ch.sourcemotion.tyr.creator.ui.ext.rowFlow
 import ch.sourcemotion.tyr.creator.ui.navigate
-import ch.sourcemotion.tyr.creator.ui.quizIfOf
 import ch.sourcemotion.tyr.creator.ui.rest.rest
 import com.benasher44.uuid.Uuid
 import com.benasher44.uuid.uuid4
@@ -16,7 +15,6 @@ import mui.system.sx
 import react.*
 import react.dom.onChange
 import react.router.useNavigate
-import react.router.useParams
 import web.cssom.pct
 import web.cssom.px
 import web.html.InputType
@@ -34,17 +32,15 @@ val NewQuizStageCreator = FC<NewQuizStageCreatorProps> { props ->
 
     val nav = useNavigate()
 
-    val params = useParams()
-
     var openNewQuizStageDialog by useState(false)
 
     var newQuizStageDescription by useState("")
     var newQuizStageNumber by useState(1)
     var newQuizStageNumberValidationMessage by useState<String>()
 
-    val loadQuizStages = { quizId: Uuid, onFailure: (Throwable) -> Unit, requester: (List<QuizStageDto>) -> Unit ->
+    val loadQuizStages = { onFailure: (Throwable) -> Unit, requester: (List<QuizStageDto>) -> Unit ->
         launch {
-            runCatching { rest.stages.getAll(quizId) }
+            runCatching { rest.stages.getAll(props.quizId) }
                 .onSuccess { requester(it) }
                 .onFailure { failure -> onFailure(failure) }
         }
@@ -55,7 +51,6 @@ val NewQuizStageCreator = FC<NewQuizStageCreatorProps> { props ->
         if (props.show) {
             if (newQuizStageNumber == 1) {
                 loadQuizStages(
-                    quizIfOf(params),
                     { props.onFailure("Fehler beim ermitteln der nächsten Seitenumber") }) { existingStages ->
                     val lastSideNumber = existingStages.map { stage -> stage.number }.sorted()
                     logger.info { "Last side number '${lastSideNumber.last()}'" }
@@ -103,9 +98,7 @@ val NewQuizStageCreator = FC<NewQuizStageCreatorProps> { props ->
                         if (enteredSideNumber <= 0) {
                             newQuizStageNumberValidationMessage = "Die Seitennummern müssen bei '1' beginnen"
                         } else {
-                            loadQuizStages(
-                                quizIfOf(params),
-                                { props.onFailure("Fehler beim Laden der Validierungsdaten") }) { existingStages ->
+                            loadQuizStages({ props.onFailure("Fehler beim Laden der Validierungsdaten") }) { existingStages ->
 
                                 if (existingStages.isEmpty()) {
                                     newQuizStageNumberValidationMessage = null

@@ -1,7 +1,7 @@
 package ch.sourcemotion.tyr.creator.ui.global
 
 import ch.sourcemotion.tyr.creator.ui.quizCategoryOf
-import ch.sourcemotion.tyr.creator.ui.quizIfOf
+import ch.sourcemotion.tyr.creator.ui.quizIdOf
 import ch.sourcemotion.tyr.creator.ui.quizStageIfOf
 import mui.material.Box
 import mui.material.Breadcrumbs
@@ -19,7 +19,7 @@ val BreadCrumbs = FC<Props> {
     Box {
 
         Breadcrumbs {
-            runCatching { quizIfOf(params) }.getOrNull()?.let { quizId ->
+            runCatching { quizIdOf(params) }.getOrNull()?.let { quizId ->
                 Link {
                     sx {
                         fontWeight = FontWeight.bold
@@ -40,7 +40,7 @@ val BreadCrumbs = FC<Props> {
                         color = "inherit"
                         href = "/$quizId/$stageId"
 
-                        +"Stage: $stageId"
+                        +"Seite: $stageId"
                     }
 
                     runCatching { quizCategoryOf(params) }.getOrNull()?.let { categoryId ->
@@ -52,7 +52,7 @@ val BreadCrumbs = FC<Props> {
                             color = "inherit"
                             href = "/$quizId/$stageId/$categoryId"
 
-                            +"Category: $categoryId"
+                            +"Kategorie: $categoryId"
                         }
                     }
                 }

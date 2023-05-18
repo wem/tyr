@@ -10,6 +10,13 @@ import react.FC
 import react.Props
 import web.cssom.pct
 
+fun interface ShortMessageTrigger {
+    fun showMessage(spec: ShortMessageSpec)
+}
+
+fun ShortMessageTrigger.showSuccessMsg(message: String) = showMessage(ShortMessageSpec(message, SUCCESS))
+
+fun ShortMessageTrigger.showInfoMsg(message: String) = showMessage(ShortMessageSpec(message, INFO))
 
 enum class ShortMessageSeverity {
     INFO, SUCCESS

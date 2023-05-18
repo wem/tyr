@@ -1,13 +1,15 @@
 package ch.sourcemotion.tyr.creator.ui.quiz
 
 import ch.sourcemotion.tyr.creator.dto.QuizDto
+import ch.sourcemotion.tyr.creator.ui.OutletContextParams
+import ch.sourcemotion.tyr.creator.ui.coroutine.executeExceptionHandled
 import ch.sourcemotion.tyr.creator.ui.coroutine.launch
 import ch.sourcemotion.tyr.creator.ui.ext.centeredGridElements
 import ch.sourcemotion.tyr.creator.ui.ext.rowFlow
 import ch.sourcemotion.tyr.creator.ui.global.*
 import ch.sourcemotion.tyr.creator.ui.global.FabKind.*
-import ch.sourcemotion.tyr.creator.ui.global.ShortMessageSeverity.SUCCESS
-import ch.sourcemotion.tyr.creator.ui.quizIfOf
+import ch.sourcemotion.tyr.creator.ui.navigate
+import ch.sourcemotion.tyr.creator.ui.quizIdOf
 import ch.sourcemotion.tyr.creator.ui.rest.rest
 import ch.sourcemotion.tyr.creator.ui.stage.NewQuizStageCreator
 import js.core.jso
@@ -18,6 +20,7 @@ import mui.material.styles.TypographyVariant
 import mui.system.sx
 import react.*
 import react.dom.onChange
+import react.router.useNavigate
 import react.router.useOutletContext
 import react.router.useParams
 import web.cssom.pct
@@ -28,43 +31,27 @@ private val logger = KotlinLogging.logger("QuizEditor")
 
 val QuizEditor = FC<Props> {
 
+    val nav = useNavigate()
     val params = useParams()
-    var quiz by useState<QuizDto>()
-    var loading by useState(true)
+    val (globalMsgTrigger, shortMsgTrigger) = useOutletContext<OutletContextParams>()
 
-    val globalMessageTrigger = useOutletContext<GlobalMessageTrigger>()
+    var quiz by useState<QuizDto>()
 
     var showNewStageCreator by useState(false)
 
-    var currentShortMessage by useState<ShortMessageSpec>()
-
-    val currentQuizId = { quizIfOf(params) }
-
-    val showError = { title: String, description: String ->
-        globalMessageTrigger.showMessage(GlobalMessage(title, description, GlobalMessage.Severity.ERROR))
-    }
-
-    val executeWithLoader = { onFailure: (Throwable) -> Unit, block: suspend () -> Unit ->
-        launch {
-            loading = true
-            runCatching {
-                block()
-            }.onFailure { onFailure(it) }
-            loading = false
-        }
-    }
+    val currentQuizId = { quizIdOf(params) }
 
     val loadQuiz = {
         val quizId = currentQuizId()
-        executeWithLoader({ failure ->
+        executeExceptionHandled({ failure ->
             logger.error(failure) { "Failed to load quiz '$quizId'" }
-            showError(
+            globalMsgTrigger.showError(
                 LOAD_FAILURE_TITLE,
                 "Quiz konnte nicht geladen werden, vielleicht existiert es nicht mehr?. Versuche es noch einmal zu öffnen."
             )
         }) {
             quiz = rest.quizzes.get(quizId, withStages = true, withCategories = true)
-            currentShortMessage = ShortMessageSpec("Quiz erfolgreich geladen / zurückgesetzt", SUCCESS)
+            shortMsgTrigger.showSuccessMsg("Quiz erfolgreich geladen / zurückgesetzt")
         }
     }
 
@@ -79,10 +66,6 @@ val QuizEditor = FC<Props> {
         if (quiz?.id != currentQuizId()) {
             loadQuiz()
         }
-    }
-
-    ProcessingOverlay {
-        show = loading
     }
 
     Grid {
@@ -109,9 +92,7 @@ val QuizEditor = FC<Props> {
             }
 
             Box {
-                sx {
-                    width = 100.pct
-                }
+                sx { width = 100.pct }
                 Divider {
                     Typography {
                         variant = TypographyVariant.h4
@@ -131,25 +112,36 @@ val QuizEditor = FC<Props> {
                 loadedQuiz.stages.sortedBy { it.number }.forEach { stage ->
                     QuizStageCard {
                         quizStage = stage
+                        onChosen = {
+                            println("shjflskjfl")
+                            navigate(nav, loadedQuiz.id, stage.id)
+                        }
                         onDelete = { stageToDelete ->
                             launch {
                                 runCatching { rest.stages.delete(stageToDelete.id) }
                                     .onSuccess {
                                         // We show the deletion success independent of the quiz reload success or fail
-                                        currentShortMessage = ShortMessageSpec("Quiz Seite '${stageToDelete.number}' " +
-                                                "erfolgreich gelöscht", SUCCESS)
+                                        shortMsgTrigger.showSuccessMsg(
+                                            "Quiz Seite '${stageToDelete.number}' erfolgreich gelöscht"
+                                        )
 
-                                        runCatching { quiz = rest.quizzes.get(loadedQuiz.id, withStages = true, withCategories = true) }
+                                        runCatching {
+                                            quiz = rest.quizzes.get(
+                                                loadedQuiz.id,
+                                                withStages = true,
+                                                withCategories = true
+                                            )
+                                        }
                                             .onFailure {
-                                                showError(
+                                                globalMsgTrigger.showError(
                                                     LOAD_FAILURE_TITLE,
-                                                    "Quiz konnte nach dem löschen der Seite nicht aktualisiert werden. Deine Ansicht ist nicht mehr aktuell. " +
+                                                    "Quiz konnte nach dem Löschen der Seite nicht aktualisiert werden. Deine Ansicht ist nicht mehr aktuell. " +
                                                             "Bitte lade die App neu."
                                                 )
                                             }
                                     }.onFailure {
-                                        showError(
-                                            "Fehler beim löschen der Seite '${stageToDelete.number}'",
+                                        globalMsgTrigger.showError(
+                                            DELETE_FAILURE_TITLE,
                                             "Quiz Seite '${stageToDelete.number}' konnte nicht gelöscht werden. Versuche es noch einmal."
                                         )
                                     }
@@ -166,14 +158,7 @@ val QuizEditor = FC<Props> {
         quizId = currentQuizId()
         onClose = { showNewStageCreator = false }
         onFailure = { msg ->
-            showError("Fehler beim erstellen der Quizseite", msg)
-        }
-    }
-
-    ShortMessage {
-        messageSpec = currentShortMessage
-        onClose = {
-            currentShortMessage = null
+            globalMsgTrigger.showError("Fehler beim erstellen der Quizseite", msg)
         }
     }
 
@@ -181,14 +166,14 @@ val QuizEditor = FC<Props> {
         fabs = listOf(
             FabSpec("Quiz speichern", FabColor.success, SAVE) {
                 quiz?.let { quizToSave ->
-                    executeWithLoader({ failure ->
+                    executeExceptionHandled({ failure ->
                         logger.error(failure) { "Failed to save quiz '$${quizToSave.id}'" }
-                        showError(
+                        globalMsgTrigger.showError(
                             "Fehler beim Speichern", "Quiz konnte nicht gespeichert werden. Versuche es noch einmal."
                         )
                     }) {
                         rest.quizzes.put(quizToSave)
-                        currentShortMessage = ShortMessageSpec("Quiz erfolgreich gespeichert", SUCCESS)
+                        shortMsgTrigger.showSuccessMsg("Quiz erfolgreich gespeichert")
                     }
                 }
             },

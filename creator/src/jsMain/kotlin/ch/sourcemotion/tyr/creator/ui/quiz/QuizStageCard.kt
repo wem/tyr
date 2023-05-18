@@ -13,7 +13,8 @@ import web.cssom.TextAlign
 
 external interface QuizStageCardProps : Props {
     var quizStage: QuizStageDto
-    var onDelete : (QuizStageDto) -> Unit
+    var onChosen: (QuizStageDto) -> Unit
+    var onDelete: (QuizStageDto) -> Unit
 }
 
 val QuizStageCard = FC<QuizStageCardProps>() { props ->
@@ -22,20 +23,25 @@ val QuizStageCard = FC<QuizStageCardProps>() { props ->
 
     Card {
         CardActionArea {
-            Typography {
-                sx {
-                    textAlign = TextAlign.center
-                }
-                variant = TypographyVariant.h3
+            Box {
+                Typography {
+                    sx {
+                        textAlign = TextAlign.center
+                    }
+                    variant = TypographyVariant.h3
 
-                +"${props.quizStage.number}"
-            }
-            CardContent {
-                Typography {
-                    +"Kategorien: ${props.quizStage.categories.size}"
+                    +"${props.quizStage.number}"
                 }
-                Typography {
-                    +"Beschreibung: ${props.quizStage.description ?: "Keine"}"
+                CardContent {
+                    Typography {
+                        +"Kategorien: ${props.quizStage.categories.size}"
+                    }
+                    Typography {
+                        +"Beschreibung: ${props.quizStage.description ?: "Keine"}"
+                    }
+                }
+                onClick = {
+                    props.onChosen(props.quizStage)
                 }
             }
         }

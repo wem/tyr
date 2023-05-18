@@ -26,6 +26,14 @@ fun interface GlobalMessageTrigger {
     fun showMessage(message: GlobalMessage)
 }
 
+fun GlobalMessageTrigger.showError(title: String, description: String){
+    showMessage(GlobalMessage(title, description, GlobalMessage.Severity.ERROR))
+}
+
+fun GlobalMessageTrigger.showWarning(title: String, description: String) {
+    showMessage(GlobalMessage(title, description, GlobalMessage.Severity.WARN))
+}
+
 data class AlertSpec(
     val title: String,
     val description: String,
