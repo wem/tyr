@@ -76,13 +76,14 @@ val QuizEditor = FC<Props> {
         sx {
             centeredGridElements()
             rowGap = theme.spacing(2)
+            columnGap = theme.spacing(2)
         }
 
         quiz?.let { loadedQuiz ->
             Grid {
                 item = true
                 TextField {
-                    label = ReactNode("Quiz Datum")
+                    label = ReactNode("Quiz-Datum")
                     variant = FormControlVariant.outlined
                     type = InputType.date
                     value = loadedQuiz.date.toString()
@@ -111,11 +112,15 @@ val QuizEditor = FC<Props> {
 
                 Grid {
                     item = true
-                    QuizStageCard {
+                    xs = 2
+                    QuizStageOverview {
                         this.stageNumber = stageNumber
                         quizStage = stage
-                        onChosen = {
-                            navigate(nav, loadedQuiz.id, stage.id)
+                        onStageChosen = { stageToEdit ->
+                            navigate(nav, loadedQuiz.id, stageToEdit.id)
+                        }
+                        onCategoryChosen = { category ->
+                            navigate(nav, loadedQuiz.id, stage.id, category.id)
                         }
                         onDelete = { stageToDelete ->
                             launch {
@@ -132,14 +137,13 @@ val QuizEditor = FC<Props> {
                                                 withStages = true,
                                                 withCategories = true
                                             )
+                                        }.onFailure {
+                                            globalMsgTrigger.showError(
+                                                LOAD_FAILURE_TITLE,
+                                                "Quiz konnte nach dem Löschen der Seite nicht aktualisiert werden. Deine Ansicht ist nicht mehr aktuell. " +
+                                                        "Bitte lade die App neu."
+                                            )
                                         }
-                                            .onFailure {
-                                                globalMsgTrigger.showError(
-                                                    LOAD_FAILURE_TITLE,
-                                                    "Quiz konnte nach dem Löschen der Seite nicht aktualisiert werden. Deine Ansicht ist nicht mehr aktuell. " +
-                                                            "Bitte lade die App neu."
-                                                )
-                                            }
                                     }.onFailure {
                                         globalMsgTrigger.showError(
                                             DELETE_FAILURE_TITLE,

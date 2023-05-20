@@ -7,6 +7,7 @@ import ch.sourcemotion.tyr.creator.ui.coroutine.executeExceptionHandled
 import ch.sourcemotion.tyr.creator.ui.coroutine.launch
 import ch.sourcemotion.tyr.creator.ui.ext.centeredGridElements
 import ch.sourcemotion.tyr.creator.ui.global.*
+import ch.sourcemotion.tyr.creator.ui.navigate
 import ch.sourcemotion.tyr.creator.ui.quizIdOf
 import ch.sourcemotion.tyr.creator.ui.quizStageIfOf
 import ch.sourcemotion.tyr.creator.ui.rest.rest
@@ -20,6 +21,7 @@ import mui.system.responsive
 import mui.system.sx
 import react.*
 import react.dom.onChange
+import react.router.useNavigate
 import react.router.useOutletContext
 import react.router.useParams
 import web.html.InputType
@@ -29,10 +31,11 @@ private val logger = KotlinLogging.logger("QuizStageEditor")
 val QuizStageEditor = FC<Props> {
 
     val theme = useTheme<Theme>()
+    val nav = useNavigate()
     val params = useParams()
     val (globalMsgTrigger, shortMsgTrigger) = useOutletContext<OutletContextParams>()
 
-    val quizId = quizIdOf(params)
+    val parentQuizId = quizIdOf(params)
     val quizStageId = quizStageIfOf(params)
 
     var quizStage by useState<QuizStageDto>()
@@ -63,6 +66,7 @@ val QuizStageEditor = FC<Props> {
         sx {
             centeredGridElements()
             rowGap = theme.spacing(2)
+            columnGap = theme.spacing(2)
         }
 
         quizStage?.let { loadedQuizStage ->
@@ -71,7 +75,7 @@ val QuizStageEditor = FC<Props> {
                 xs = 3
                 TextField {
                     fullWidth = true
-                    label = ReactNode("Beschreibung")
+                    label = ReactNode("Seiten-Beschreibung")
                     variant = FormControlVariant.outlined
                     type = InputType.text
                     value = loadedQuizStage.description
@@ -103,16 +107,18 @@ val QuizStageEditor = FC<Props> {
                 val categoryNumber = idx + 1
                 Grid {
                     item = true
-                    QuizCategoryCard {
+                    xs = 2
+                    QuizCategoryOverview {
                         quizCategory = category
                         this.categoryNumber = categoryNumber
-                        onDelete = { categoryToDelete ->
+                        onCategoryChosen = { navigate(nav, parentQuizId, quizStageId, category.id) }
+                        onDeleteCategory = {
                             launch {
-                                runCatching { rest.categories.delete(categoryToDelete.id) }
+                                runCatching { rest.categories.delete(category.id) }
                                     .onSuccess {
                                         // We show the deletion success independent of quiz stage reload success or fail
                                         shortMsgTrigger.showSuccessMsg(
-                                            "Kateogorie '${categoryToDelete.title}' erfolgreich gelöscht"
+                                            "Kateogorie '${category.title}' erfolgreich gelöscht"
                                         )
 
                                         runCatching {
@@ -130,7 +136,7 @@ val QuizStageEditor = FC<Props> {
                                     }.onFailure {
                                         globalMsgTrigger.showError(
                                             DELETE_FAILURE_TITLE,
-                                            "Kategorie '${categoryToDelete.title}' konnte nicht gelöscht werden. Versuche es noch einmal."
+                                            "Kategorie '${category.title}' konnte nicht gelöscht werden. Versuche es noch einmal."
                                         )
                                     }
                             }
@@ -151,7 +157,7 @@ val QuizStageEditor = FC<Props> {
                             SAVE_FAILURE_TITLE, "Quiz Seite konnte nicht gespeichert werden. Versuche es noch einmal."
                         )
                     }) {
-                        rest.stages.put(quizId, quizStageToSave)
+                        rest.stages.put(parentQuizId, quizStageToSave)
                         shortMsgTrigger.showSuccessMsg("Quiz Seite erfolgreich gespeichert")
                     }
                 }
@@ -165,7 +171,7 @@ val QuizStageEditor = FC<Props> {
         )
     }
     NewQuizCategoryCreator {
-        parentQuizId = quizId
+        this.parentQuizId = parentQuizId
         parentQuizStageId = quizStageId
         show = showNewCategoryCreator
         globalMessageTrigger = globalMsgTrigger

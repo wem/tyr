@@ -54,7 +54,7 @@ val NewQuizCreator = FC<NewQuizCreatorProps> { props ->
                 }
                 TextField {
                     fullWidth = true
-                    label = ReactNode("Quiz Datum")
+                    label = ReactNode("Quiz-Datum")
                     variant = FormControlVariant.outlined
                     type = InputType.date
                     value = newQuizDateRaw
