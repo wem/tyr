@@ -10,9 +10,10 @@ import java.util.*
 
 class QuizRowMapper(
     private val stageMapper: QuizStageRowMapper = QuizStageRowMapper()
-) : RowWithRelationMapper<Quiz> {
+) : RowWithRelationMapper<Quiz, JsonObject> {
 
     private val quizzes = HashMap<UUID, JsonObject>()
+    private val assignedStages = HashMap<UUID, MutableList<UUID>>()
 
     override fun map(row: Row) {
         val rowJson = row.toJson()
@@ -22,10 +23,16 @@ class QuizRowMapper(
             val quizJson = quizzes.getOrElse(quizId) { rowJson.also { quizzes[quizId] = it } }
             val stageJson = stageMapper.mapWithRelation(rowJson.copy())
             if (stageJson != null) {
-                val stageRelations = (quizJson.getJsonArray(STAGES_REL_FIELD_NAME) ?: JsonArray()).apply {
-                    add(stageJson)
+                val assignedStagesActualQuiz = assignedStages.getOrPut(quizId) { ArrayList() }
+                if (!assignedStagesActualQuiz.contains(stageJson.id)) {
+                    val stageRelations = (quizJson.getJsonArray(STAGES_REL_FIELD_NAME) ?: JsonArray()).apply {
+                        if (!list.any { it is StageJson && it.id == stageJson.id }) {
+                            add(stageJson)
+                        }
+                    }
+                    quizJson.put(STAGES_REL_FIELD_NAME, stageRelations)
+                    assignedStagesActualQuiz.add(stageJson.id)
                 }
-                quizJson.put(STAGES_REL_FIELD_NAME, stageRelations)
             }
         }
     }
