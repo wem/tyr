@@ -51,6 +51,7 @@ val QuizStageEditor = FC<Props> {
             )
         }) {
             quizStage = rest.stages.get(quizStageId, withCategories = true)
+            shortMsgTrigger.showSuccessMsg("Quiz Seite erfolgreich geladen / zurückgesetzt")
             logger.debug { "Quiz stage '${quizStageId} loaded'" }
         }
     }
