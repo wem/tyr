@@ -41,7 +41,7 @@ databaseChangeLog:
                   constraints:
                     nullable: false
                     foreignKeyName: stage_quiz_fk
-                    references: quiz(id)
+                    references: quiz(id) ON DELETE CASCADE
 
         - createTable:
             tableName: quiz_category
@@ -76,7 +76,7 @@ databaseChangeLog:
                   constraints:
                     nullable: false
                     foreignKeyName: category_stage_fk
-                    references: quiz_stage (id)
+                    references: quiz_stage(id) ON DELETE CASCADE
 
         - createTable:
             tableName: file_info
