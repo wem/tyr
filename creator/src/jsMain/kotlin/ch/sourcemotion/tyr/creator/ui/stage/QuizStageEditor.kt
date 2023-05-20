@@ -151,7 +151,7 @@ val QuizStageEditor = FC<Props> {
                             SAVE_FAILURE_TITLE, "Quiz Seite konnte nicht gespeichert werden. Versuche es noch einmal."
                         )
                     }) {
-                        rest.stages.put(quizId!!, quizStageToSave)
+                        rest.stages.put(quizId, quizStageToSave)
                         shortMsgTrigger.showSuccessMsg("Quiz Seite erfolgreich gespeichert")
                     }
                 }

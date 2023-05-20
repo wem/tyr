@@ -14,7 +14,7 @@ import web.cssom.TextAlign
 external interface QuizCategoryCardProps : Props {
     var quizCategory: QuizCategoryDto
     var categoryNumber: Int
-    var onDelete : (QuizCategoryDto) -> Unit
+    var onDelete: (QuizCategoryDto) -> Unit
 }
 
 val QuizCategoryCard = FC<QuizCategoryCardProps> { props ->

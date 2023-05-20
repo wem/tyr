@@ -8,8 +8,8 @@ import react.FC
 import react.Props
 
 external interface SaveOrResetButtonsProps : Props {
-    var onSave : () -> Unit
-    var onCancel : () -> Unit
+    var onSave: () -> Unit
+    var onCancel: () -> Unit
 }
 
 val SaveOrResetButtons = FC<SaveOrResetButtonsProps> { props ->
@@ -18,15 +18,15 @@ val SaveOrResetButtons = FC<SaveOrResetButtonsProps> { props ->
         Button {
             variant = ButtonVariant.outlined
             +"Speicher"
-            onClick =  {
+            onClick = {
                 props.onSave()
             }
         }
         Button {
             variant = ButtonVariant.contained
             +"Zurücksetzen"
-            onClick =  {
-                props.onCancel( )
+            onClick = {
+                props.onCancel()
             }
         }
     }

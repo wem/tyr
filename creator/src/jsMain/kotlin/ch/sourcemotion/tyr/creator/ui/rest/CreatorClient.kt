@@ -22,7 +22,7 @@ val rest = CreatorClient
 object CreatorClient {
     private val logger = KotlinLogging.logger("CreatorClient")
 
-//    private val baseUrl = "http://localhost:8887/creator"
+    //    private val baseUrl = "http://localhost:8887/creator"
     private val baseUrl = "${window.location.origin}/creator"
 
     private val restClient = HttpClient(Js) {
@@ -56,18 +56,20 @@ class Quizzes(private val baseUrl: String, private val restClient: HttpClient) {
     }
 
     suspend fun getAll(withStages: Boolean = false, withCategories: Boolean = false): List<QuizDto> {
-        return runCatching { restClient.get("$baseUrl/quizzes"){
-            url {
-                parameters.append("withStages", "$withStages")
-                parameters.append("withCategories", "$withCategories")
-            }
-        }.body<List<QuizDto>>() }
+        return runCatching {
+            restClient.get("$baseUrl/quizzes") {
+                url {
+                    parameters.append("withStages", "$withStages")
+                    parameters.append("withCategories", "$withCategories")
+                }
+            }.body<List<QuizDto>>()
+        }
             .getOrElse { failure -> throw RestException("Failed to query all quizzes", failure) }
     }
 
     suspend fun get(quizId: Uuid, withStages: Boolean = false, withCategories: Boolean = false): QuizDto {
         return runCatching {
-            restClient.get("$baseUrl/quizzes/$quizId"){
+            restClient.get("$baseUrl/quizzes/$quizId") {
                 url {
                     parameters.append("withStages", "$withStages")
                     parameters.append("withCategories", "$withCategories")
@@ -88,9 +90,11 @@ class QuizStages(private val baseUrl: String, private val restClient: HttpClient
     }
 
     suspend fun getAll(quizId: Uuid, withCategories: Boolean = false): List<QuizStageDto> {
-        return runCatching { restClient.get("$baseUrl/quizzes/$quizId/stages"){
-            url { parameters.append("withCategories", "$withCategories") }
-        }.body<List<QuizStageDto>>() }
+        return runCatching {
+            restClient.get("$baseUrl/quizzes/$quizId/stages") {
+                url { parameters.append("withCategories", "$withCategories") }
+            }.body<List<QuizStageDto>>()
+        }
             .getOrElse { failure -> throw RestException("Failed to query all quiz stages of quiz '$quizId'", failure) }
     }
 
@@ -102,7 +106,7 @@ class QuizStages(private val baseUrl: String, private val restClient: HttpClient
 
     suspend fun get(quizStageId: Uuid, withCategories: Boolean = false): QuizStageDto {
         return runCatching {
-            restClient.get("$baseUrl/stages/$quizStageId"){
+            restClient.get("$baseUrl/stages/$quizStageId") {
                 url { parameters.append("withCategories", "$withCategories") }
             }.body<QuizStageDto>()
         }.getOrElse { failure -> throw RestException("Failed to query quiz stage '$quizStageId'", failure) }

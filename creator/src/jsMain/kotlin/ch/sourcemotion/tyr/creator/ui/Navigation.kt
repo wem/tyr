@@ -20,7 +20,8 @@ fun navigate(func: NavigateFunction, quizId: Uuid? = null, quizStageId: Uuid? = 
 
 fun quizIdOf(params: Params) = uuidFrom(params[QUIZ_NAV_PARAM] ?: throw QuizParameterMissingException())
 fun quizStageIfOf(params: Params) = uuidFrom(params[QUIZ_STAGE_NAV_PARAM] ?: throw QuizStageParameterMissingException())
-fun quizCategoryOf(params: Params) = uuidFrom(params[QUIZ_CATEGORY_NAV_PARAM] ?: throw QuizCategoryParameterMissingException())
+fun quizCategoryOf(params: Params) =
+    uuidFrom(params[QUIZ_CATEGORY_NAV_PARAM] ?: throw QuizCategoryParameterMissingException())
 
 abstract class ParameterException(message: String?) : Exception(message)
 

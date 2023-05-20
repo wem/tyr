@@ -15,7 +15,6 @@ import web.cssom.Position
 import web.cssom.px
 
 
-
 enum class FabKind {
     SAVE, RESET, NEW
 }
@@ -52,17 +51,19 @@ val FloatingButtons = FC<FloatingButtonsProps> { props ->
                 variant = FabVariant.extended
                 disabled = fabSpec.disabled
 
-                when(fabSpec.kind) {
+                when (fabSpec.kind) {
                     NEW -> SpeedDialIcon {
                         sx {
                             marginRight = 4.px
                         }
                     }
+
                     RESET -> Redo {
                         sx {
                             marginRight = 4.px
                         }
                     }
+
                     SAVE -> Done {
                         sx {
                             marginRight = 4.px

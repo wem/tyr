@@ -17,7 +17,7 @@ import web.cssom.JustifyContent
 data class GlobalMessage(
     val title: String,
     val description: String,
-    val severity: GlobalMessage.Severity
+    val severity: Severity
 ) {
     enum class Severity(val color: AlertColor) {
         SUCCESS(AlertColor.success),
@@ -31,7 +31,7 @@ fun interface GlobalMessageTrigger {
     fun showMessage(message: GlobalMessage)
 }
 
-fun GlobalMessageTrigger.showError(title: String, description: String){
+fun GlobalMessageTrigger.showError(title: String, description: String) {
     showMessage(GlobalMessage(title, description, GlobalMessage.Severity.ERROR))
 }
 
@@ -46,7 +46,7 @@ data class AlertSpec(
     val onAck: (AlertSpec) -> Unit
 )
 
-external interface AlertsProps: Props {
+external interface AlertsProps : Props {
     var alerts: List<AlertSpec>?
 }
 

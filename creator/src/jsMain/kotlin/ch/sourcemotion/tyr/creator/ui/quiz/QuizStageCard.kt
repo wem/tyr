@@ -18,7 +18,7 @@ external interface QuizStageCardProps : Props {
     var onDelete: (QuizStageDto) -> Unit
 }
 
-val QuizStageCard = FC<QuizStageCardProps>() { props ->
+val QuizStageCard = FC<QuizStageCardProps> { props ->
 
     var showDeletionConfirm by useState(false)
 
