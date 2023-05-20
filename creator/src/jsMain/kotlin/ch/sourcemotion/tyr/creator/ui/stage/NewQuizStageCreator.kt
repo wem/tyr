@@ -2,8 +2,6 @@ package ch.sourcemotion.tyr.creator.ui.stage
 
 import ch.sourcemotion.tyr.creator.dto.QuizStageDto
 import ch.sourcemotion.tyr.creator.ui.coroutine.launch
-import ch.sourcemotion.tyr.creator.ui.ext.centeredGridElements
-import ch.sourcemotion.tyr.creator.ui.ext.rowFlow
 import ch.sourcemotion.tyr.creator.ui.global.*
 import ch.sourcemotion.tyr.creator.ui.navigate
 import ch.sourcemotion.tyr.creator.ui.rest.rest
@@ -12,12 +10,12 @@ import com.benasher44.uuid.uuid4
 import js.core.jso
 import mu.KotlinLogging
 import mui.material.*
+import mui.material.styles.Theme
+import mui.material.styles.useTheme
 import mui.system.sx
 import react.*
 import react.dom.onChange
 import react.router.useNavigate
-import web.cssom.pct
-import web.cssom.px
 import web.html.InputType
 
 external interface NewQuizStageCreatorProps : Props {
@@ -32,6 +30,7 @@ private val logger = KotlinLogging.logger("NewQuizStageCreator")
 
 val NewQuizStageCreator = FC<NewQuizStageCreatorProps> { props ->
 
+    val theme = useTheme<Theme>()
     val nav = useNavigate()
 
     var openNewQuizStageDialog by useState(false)
@@ -50,6 +49,7 @@ val NewQuizStageCreator = FC<NewQuizStageCreatorProps> { props ->
     }
 
     Dialog {
+        fullWidth = true
         open = openNewQuizStageDialog
         onClose = { _, _ ->
             props.onClose()
@@ -59,22 +59,14 @@ val NewQuizStageCreator = FC<NewQuizStageCreatorProps> { props ->
             +"Neue Quiz Seite erstellen"
         }
         DialogContent {
-            Grid {
-                container = true
+            Box {
                 sx {
-                    rowFlow()
-                    centeredGridElements()
-                    paddingBottom = 8.px
-                    paddingTop = 8.px
-                    rowGap = 24.px
-                    width = 100.pct
+                    paddingBottom = theme.spacing(1)
+                    paddingTop = theme.spacing(1)
                 }
 
                 TextField {
-                    sx {
-                        width = 51.pct
-                    }
-
+                    fullWidth = true
                     label = ReactNode("Beschreibung")
                     variant = FormControlVariant.outlined
                     type = InputType.text

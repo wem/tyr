@@ -3,11 +3,16 @@ package ch.sourcemotion.tyr.creator.ui.global
 import mui.material.Alert
 import mui.material.AlertColor
 import mui.material.AlertTitle
-import mui.material.Grid
+import mui.material.Box
+import mui.material.styles.Theme
+import mui.material.styles.useTheme
 import mui.system.sx
 import react.FC
 import react.Props
-import web.cssom.*
+import web.cssom.AlignItems
+import web.cssom.Display
+import web.cssom.GridAutoFlow
+import web.cssom.JustifyContent
 
 data class GlobalMessage(
     val title: String,
@@ -46,20 +51,19 @@ external interface AlertsProps: Props {
 }
 
 val Alerts = FC<AlertsProps> { props ->
-    Grid {
-        container = true
+    val theme = useTheme<Theme>()
+
+    Box {
         sx {
+            display = Display.grid
             gridAutoFlow = GridAutoFlow.row
             justifyContent = JustifyContent.center
             alignItems = AlignItems.center
-            rowGap = 4.px
+            rowGap = theme.spacing(1)
         }
 
         props.alerts?.forEach { alertSpec ->
             Alert {
-                sx {
-                    width = 51.pct // Little hack to keep alerts in a row the simple way
-                }
                 AlertTitle {
                     +alertSpec.title
                 }

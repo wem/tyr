@@ -9,11 +9,12 @@ import js.core.jso
 import kotlinx.datetime.LocalDate
 import mu.KotlinLogging
 import mui.material.*
+import mui.material.styles.Theme
+import mui.material.styles.useTheme
 import mui.system.sx
 import react.*
 import react.dom.onChange
 import react.router.useNavigate
-import web.cssom.px
 import web.html.InputType
 
 external interface NewQuizCreatorProps : Props {
@@ -24,6 +25,8 @@ external interface NewQuizCreatorProps : Props {
 private val logger = KotlinLogging.logger("NewQuizCreator")
 
 val NewQuizCreator = FC<NewQuizCreatorProps> { props ->
+
+    val theme = useTheme<Theme>()
 
     val nav = useNavigate()
 
@@ -46,11 +49,11 @@ val NewQuizCreator = FC<NewQuizCreatorProps> { props ->
         DialogContent {
             Box {
                 sx {
-                    paddingBottom = 8.px
-                    paddingTop = 8.px
+                    paddingBottom = theme.spacing(1)
+                    paddingTop = theme.spacing(1)
                 }
                 TextField {
-                    id = "new-quiz-date"
+                    fullWidth = true
                     label = ReactNode("Quiz Datum")
                     variant = FormControlVariant.outlined
                     type = InputType.date

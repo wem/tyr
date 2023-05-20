@@ -4,6 +4,8 @@ import ch.sourcemotion.tyr.creator.ui.global.FabKind.*
 import mui.icons.material.Done
 import mui.icons.material.Redo
 import mui.material.*
+import mui.material.styles.Theme
+import mui.material.styles.useTheme
 import mui.system.sx
 import react.FC
 import react.Props
@@ -31,15 +33,17 @@ external interface FloatingButtonsProps : Props {
 }
 
 val FloatingButtons = FC<FloatingButtonsProps> { props ->
+    val theme = useTheme<Theme>()
+
     Grid {
         container = true
         sx {
             position = Position.absolute
-            bottom = 32.px
-            marginRight = 64.px
+            bottom = theme.spacing(4)
+            right = theme.spacing(4)
             justifyContent = JustifyContent.end
             alignItems = AlignItems.center
-            columnGap = 8.px
+            columnGap = theme.spacing(1)
         }
 
         props.fabs?.forEach { fabSpec ->

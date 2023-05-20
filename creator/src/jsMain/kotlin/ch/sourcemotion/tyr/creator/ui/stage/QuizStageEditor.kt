@@ -6,7 +6,6 @@ import ch.sourcemotion.tyr.creator.ui.category.NewQuizCategoryCreator
 import ch.sourcemotion.tyr.creator.ui.coroutine.executeExceptionHandled
 import ch.sourcemotion.tyr.creator.ui.coroutine.launch
 import ch.sourcemotion.tyr.creator.ui.ext.centeredGridElements
-import ch.sourcemotion.tyr.creator.ui.ext.rowFlow
 import ch.sourcemotion.tyr.creator.ui.global.*
 import ch.sourcemotion.tyr.creator.ui.quizIdOf
 import ch.sourcemotion.tyr.creator.ui.quizStageIfOf
@@ -14,21 +13,22 @@ import ch.sourcemotion.tyr.creator.ui.rest.rest
 import js.core.jso
 import mu.KotlinLogging
 import mui.material.*
+import mui.material.styles.Theme
 import mui.material.styles.TypographyVariant
+import mui.material.styles.useTheme
+import mui.system.responsive
 import mui.system.sx
 import react.*
 import react.dom.onChange
 import react.router.useOutletContext
 import react.router.useParams
-import web.cssom.Display
-import web.cssom.pct
-import web.cssom.px
 import web.html.InputType
 
 private val logger = KotlinLogging.logger("QuizStageEditor")
 
 val QuizStageEditor = FC<Props> {
 
+    val theme = useTheme<Theme>()
     val params = useParams()
     val (globalMsgTrigger, shortMsgTrigger) = useOutletContext<OutletContextParams>()
 
@@ -57,24 +57,20 @@ val QuizStageEditor = FC<Props> {
     }
 
     Grid {
+        id = "quiz-stage-edit-container"
+        container = true
+        direction = responsive(GridDirection.row)
         sx {
-            width = 80.pct
-            rowFlow()
             centeredGridElements()
-            rowGap = 16.px
+            rowGap = theme.spacing(2)
         }
 
         quizStage?.let { loadedQuizStage ->
             Grid {
-                container = true
-                sx {
-                    rowFlow()
-                    centeredGridElements()
-                    rowGap = 16.px
-                    display = Display.grid
-                }
-
+                item = true
+                xs = 3
                 TextField {
+                    fullWidth = true
                     label = ReactNode("Beschreibung")
                     variant = FormControlVariant.outlined
                     type = InputType.text
@@ -92,8 +88,9 @@ val QuizStageEditor = FC<Props> {
                 }
             }
 
-            Box {
-                sx { width = 100.pct }
+            Grid {
+                item = true
+                xs = 12
                 Divider {
                     Typography {
                         variant = TypographyVariant.h4
@@ -102,16 +99,10 @@ val QuizStageEditor = FC<Props> {
                 }
             }
 
-            Grid {
-                container = true
-                sx {
-                    centeredGridElements()
-                    rowGap = 16.px
-                    columnGap = 16.px
-                }
-
-                loadedQuizStage.categories.sortedBy { it.orderNumber }.forEachIndexed { idx, category ->
-                    val categoryNumber = idx + 1
+            loadedQuizStage.categories.sortedBy { it.orderNumber }.forEachIndexed { idx, category ->
+                val categoryNumber = idx + 1
+                Grid {
+                    item = true
                     QuizCategoryCard {
                         quizCategory = category
                         this.categoryNumber = categoryNumber

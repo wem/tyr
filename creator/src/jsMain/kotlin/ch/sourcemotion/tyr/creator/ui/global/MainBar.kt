@@ -5,17 +5,19 @@ import ch.sourcemotion.tyr.creator.ui.quiz.NewQuizCreator
 import mui.icons.material.Edit
 import mui.icons.material.FileOpen
 import mui.material.*
+import mui.material.styles.Theme
 import mui.material.styles.TypographyVariant
+import mui.material.styles.useTheme
 import mui.system.sx
 import react.FC
 import react.Props
 import react.ReactNode
 import react.dom.html.ReactHTML.div
 import react.useState
-import web.cssom.px
 
 val MainBar = FC<Props> {
 
+    val theme = useTheme<Theme>()
     var showNewQuizCreator by useState(false)
     var showExistingQuizChooser by useState(false)
 
@@ -36,7 +38,7 @@ val MainBar = FC<Props> {
                 title = ReactNode("Neues Quiz erstellen")
 
                 IconButton {
-                    sx { marginLeft = 16.px }
+                    sx { marginLeft = theme.spacing(2) }
                     color = IconButtonColor.inherit
 
                     SpeedDialIcon()
@@ -51,7 +53,7 @@ val MainBar = FC<Props> {
                 title = ReactNode("Bestehendes Quiz bearbeiten")
 
                 IconButton {
-                    sx { marginLeft = 8.px }
+                    sx { marginLeft = theme.spacing(1) }
 
                     color = IconButtonColor.inherit
 
@@ -68,8 +70,8 @@ val MainBar = FC<Props> {
 
                 IconButton {
                     sx {
-                        marginLeft = 8.px
-                        marginRight = 32.px
+                        marginLeft = theme.spacing(1)
+                        marginRight = theme.spacing(4)
                     }
 
                     color = IconButtonColor.inherit

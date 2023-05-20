@@ -13,13 +13,16 @@ import com.benasher44.uuid.uuid4
 import js.core.jso
 import mu.KotlinLogging
 import mui.material.*
+import mui.material.styles.Theme
+import mui.material.styles.useTheme
 import mui.system.sx
 import react.*
 import react.dom.onChange
 import react.router.useNavigate
+import web.cssom.Auto
 import web.cssom.Display
+import web.cssom.array
 import web.cssom.pct
-import web.cssom.px
 import web.html.InputType
 
 external interface NewQuizCategoryCreatorProps : Props {
@@ -35,6 +38,7 @@ private val logger = KotlinLogging.logger("NewQuizStageCreator")
 
 val NewQuizCategoryCreator = FC<NewQuizCategoryCreatorProps> { props ->
 
+    val theme = useTheme<Theme>()
     val nav = useNavigate()
 
     var openNewQuizCategoryDialog by useState(false)
@@ -65,6 +69,7 @@ val NewQuizCategoryCreator = FC<NewQuizCategoryCreatorProps> { props ->
     }
 
     Dialog {
+        fullWidth = true
         open = openNewQuizCategoryDialog
         onClose = { _, _ ->
             props.onClose()
@@ -74,18 +79,27 @@ val NewQuizCategoryCreator = FC<NewQuizCategoryCreatorProps> { props ->
             +"Neue Quiz Kategorie erstellen"
         }
         DialogContent {
-            Grid {
+            Box {
                 sx {
                     display = Display.grid
                     rowFlow()
                     centeredGridElements()
-                    paddingBottom = 8.px
-                    paddingTop = 8.px
-                    rowGap = 24.px
+                    gridTemplateColumns = array(
+                        100.pct,
+                    )
+                    gridTemplateRows = array(
+                        Auto.auto,
+                        Auto.auto,
+                        Auto.auto,
+                    )
+                    paddingBottom = theme.spacing(1)
+                    paddingTop = theme.spacing(1)
+                    rowGap = theme.spacing(3)
                     width = 100.pct
                 }
 
                 TextField {
+                    fullWidth = true
                     label = ReactNode("Title")
                     required = true
                     error = newQuizCategoryTitleValidationMessage != null
@@ -107,6 +121,7 @@ val NewQuizCategoryCreator = FC<NewQuizCategoryCreatorProps> { props ->
                 }
 
                 TextField {
+                    fullWidth = true
                     label = ReactNode("Kontext / Kategorie-Frage")
                     required = true
                     error = newQuizCategoryContextTextValidationMessage != null
@@ -128,6 +143,7 @@ val NewQuizCategoryCreator = FC<NewQuizCategoryCreatorProps> { props ->
                 }
 
                 TextField {
+                    fullWidth = true
                     label = ReactNode("Kontext / Kategorie-Fragen Beschreibung")
                     variant = FormControlVariant.outlined
                     type = InputType.text

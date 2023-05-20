@@ -5,7 +5,6 @@ import ch.sourcemotion.tyr.creator.ui.OutletContextParams
 import ch.sourcemotion.tyr.creator.ui.coroutine.executeExceptionHandled
 import ch.sourcemotion.tyr.creator.ui.coroutine.launch
 import ch.sourcemotion.tyr.creator.ui.ext.centeredGridElements
-import ch.sourcemotion.tyr.creator.ui.ext.rowFlow
 import ch.sourcemotion.tyr.creator.ui.global.*
 import ch.sourcemotion.tyr.creator.ui.global.FabKind.*
 import ch.sourcemotion.tyr.creator.ui.navigate
@@ -16,21 +15,23 @@ import js.core.jso
 import kotlinx.datetime.LocalDate
 import mu.KotlinLogging
 import mui.material.*
+import mui.material.styles.Theme
 import mui.material.styles.TypographyVariant
+import mui.material.styles.useTheme
+import mui.system.responsive
 import mui.system.sx
 import react.*
 import react.dom.onChange
 import react.router.useNavigate
 import react.router.useOutletContext
 import react.router.useParams
-import web.cssom.pct
-import web.cssom.px
 import web.html.InputType
 
 private val logger = KotlinLogging.logger("QuizEditor")
 
 val QuizEditor = FC<Props> {
 
+    val theme = useTheme<Theme>()
     val nav = useNavigate()
     val params = useParams()
     val (globalMsgTrigger, shortMsgTrigger) = useOutletContext<OutletContextParams>()
@@ -69,30 +70,34 @@ val QuizEditor = FC<Props> {
     }
 
     Grid {
+        id = "quiz-edit-container"
         container = true
+        direction = responsive(GridDirection.row)
         sx {
-            width = 80.pct
-            rowFlow()
             centeredGridElements()
-            rowGap = 16.px
+            rowGap = theme.spacing(2)
         }
 
         quiz?.let { loadedQuiz ->
-            TextField {
-                label = ReactNode("Quiz Datum")
-                variant = FormControlVariant.outlined
-                type = InputType.date
-                value = loadedQuiz.date.toString()
-                InputLabelProps = jso {
-                    shrink = true
-                }
-                onChange = {
-                    quiz = quiz?.copy(date = LocalDate.parse(it.target.asDynamic().value))
+            Grid {
+                item = true
+                TextField {
+                    label = ReactNode("Quiz Datum")
+                    variant = FormControlVariant.outlined
+                    type = InputType.date
+                    value = loadedQuiz.date.toString()
+                    InputLabelProps = jso {
+                        shrink = true
+                    }
+                    onChange = {
+                        quiz = quiz?.copy(date = LocalDate.parse(it.target.asDynamic().value))
+                    }
                 }
             }
 
-            Box {
-                sx { width = 100.pct }
+            Grid {
+                item = true
+                xs = 12
                 Divider {
                     Typography {
                         variant = TypographyVariant.h4
@@ -101,17 +106,11 @@ val QuizEditor = FC<Props> {
                 }
             }
 
-            Grid {
-                container = true
-                sx {
-                    rowFlow()
-                    centeredGridElements()
-                    rowGap = 16.px
-                    columnGap = 16.px
-                }
-                loadedQuiz.stages.sortedBy { it.orderNumber }.forEachIndexed { idx, stage ->
-                    val stageNumber = idx + 1
+            loadedQuiz.stages.sortedBy { it.orderNumber }.forEachIndexed { idx, stage ->
+                val stageNumber = idx + 1
 
+                Grid {
+                    item = true
                     QuizStageCard {
                         this.stageNumber = stageNumber
                         quizStage = stage
