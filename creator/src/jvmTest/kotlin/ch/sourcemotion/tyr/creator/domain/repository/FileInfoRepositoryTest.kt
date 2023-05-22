@@ -3,7 +3,9 @@ package ch.sourcemotion.tyr.creator.domain.repository
 import ch.sourcemotion.tyr.creator.domain.MimeType
 import ch.sourcemotion.tyr.creator.domain.entity.FileInfoEntity
 import ch.sourcemotion.tyr.creator.ext.getOrCreateByFactory
+import ch.sourcemotion.tyr.creator.ext.newUUID
 import ch.sourcemotion.tyr.creator.testing.AbstractVertxDatabaseTest
+import io.kotest.matchers.collections.shouldContainExactlyInAnyOrder
 import io.kotest.matchers.nulls.shouldBeNull
 import io.kotest.matchers.shouldBe
 import io.vertx.junit5.VertxTestContext
@@ -38,5 +40,20 @@ class FileInfoRepositoryTest : AbstractVertxDatabaseTest() {
         val updatedFileInfo = fileInfo.copy(description = "New description")
         sut.save(updatedFileInfo)
         sut.findById(fileInfoId).shouldBe(updatedFileInfo)
+    }
+
+    @Test
+    fun `find all`(testContext: VertxTestContext) = testContext.async {
+        val fileInfos = (1..5).map {
+            FileInfoEntity(newUUID(), MimeType.JPEG, "description_$it")
+        }
+
+        sut.withTx {
+            fileInfos.forEach { fileInfo ->
+                sut.save(fileInfo)
+            }
+        }
+
+        sut.findAll().shouldContainExactlyInAnyOrder(fileInfos)
     }
 }

@@ -24,6 +24,8 @@ class FileInfoRepository(pool: PgPool) : AbstractRepository(pool) {
 
         const val FIND_BY_ID_QUERY = "SELECT $SELECT_COLUMNS_EXP FROM $TABLE f " +
                 "WHERE f.$ID_COLUMN = #{$ID_COLUMN}"
+
+        const val FIND_ALL_QUERY = "SELECT $SELECT_COLUMNS_EXP FROM $TABLE f"
     }
 
 
@@ -47,6 +49,17 @@ class FileInfoRepository(pool: PgPool) : AbstractRepository(pool) {
         }
     }
 
+    suspend fun findAll(client: SqlClient = pool) : List<FileInfoEntity> {
+        return runCatching {
+            SqlTemplate.forQuery(client, FIND_ALL_QUERY)
+                .mapTo(FileInfoEntity::class.java)
+                .execute(emptyMap())
+                .await().map { it }
+        }.getOrElse { failure ->
+            throw FileInfoRepositoryException("Failed to find all file infos", failure)
+        }
+    }
+
     suspend fun findById(id: UUID, client: SqlClient = pool): FileInfoEntity? {
         return runCatching {
             SqlTemplate.forQuery(client, FIND_BY_ID_QUERY)
@@ -54,7 +67,7 @@ class FileInfoRepository(pool: PgPool) : AbstractRepository(pool) {
                 .execute(mapOf(ID_COLUMN to id))
                 .await().firstOrNull()
         }.getOrElse { failure ->
-            throw QuizCategoryRepositoryException("Failed to find file info by id '$id'", failure)
+            throw FileInfoRepositoryException("Failed to find file info by id '$id'", failure)
         }
     }
 }
