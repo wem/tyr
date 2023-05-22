@@ -1,6 +1,6 @@
 package ch.sourcemotion.tyr.creator.ui.global
 
-import ch.sourcemotion.tyr.creator.ui.quizCategoryOf
+import ch.sourcemotion.tyr.creator.ui.quizCategoryIdOf
 import ch.sourcemotion.tyr.creator.ui.quizIdOf
 import ch.sourcemotion.tyr.creator.ui.quizStageIfOf
 import mui.material.Box
@@ -43,7 +43,7 @@ val BreadCrumbs = FC<Props> {
                         +"Seite: $stageId"
                     }
 
-                    runCatching { quizCategoryOf(params) }.getOrNull()?.let { categoryId ->
+                    runCatching { quizCategoryIdOf(params) }.getOrNull()?.let { categoryId ->
                         Link {
                             sx {
                                 fontWeight = FontWeight.bold

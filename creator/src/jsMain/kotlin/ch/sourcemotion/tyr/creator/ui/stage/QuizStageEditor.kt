@@ -36,23 +36,23 @@ val QuizStageEditor = FC<Props> {
     val (globalMsgTrigger, shortMsgTrigger) = useOutletContext<OutletContextParams>()
 
     val parentQuizId = quizIdOf(params)
-    val quizStageId = quizStageIfOf(params)
+    val stageId = quizStageIfOf(params)
 
-    var quizStage by useState<QuizStageDto>()
+    var stage by useState<QuizStageDto>()
 
     var showNewCategoryCreator by useState(false)
 
     val loadQuizStage = {
         executeExceptionHandled({ failure ->
-            logger.error(failure) { "Failed to load quiz stage '$quizStage'" }
+            logger.error(failure) { "Failed to load quiz stage '$stageId'" }
             globalMsgTrigger.showError(
                 LOAD_FAILURE_TITLE,
-                "Quiz Seite konnte nicht geladen werden, vielleicht existiert es nicht mehr?. Versuche es noch einmal zu öffnen."
+                "Quiz Seite konnte nicht geladen werden, vielleicht existiert sie nicht mehr?. Versuche es noch einmal zu öffnen."
             )
         }) {
-            quizStage = rest.stages.get(quizStageId, withCategories = true)
+            stage = rest.stages.get(stageId, withCategories = true)
             shortMsgTrigger.showSuccessMsg("Quiz Seite erfolgreich geladen / zurückgesetzt")
-            logger.debug { "Quiz stage '${quizStageId} loaded'" }
+            logger.debug { "Quiz stage '${stageId} loaded'" }
         }
     }
 
@@ -70,7 +70,7 @@ val QuizStageEditor = FC<Props> {
             columnGap = theme.spacing(2)
         }
 
-        quizStage?.let { loadedQuizStage ->
+        stage?.let { loadedQuizStage ->
             Grid {
                 item = true
                 xs = 3
@@ -88,7 +88,7 @@ val QuizStageEditor = FC<Props> {
                         val description = if (value?.isNotEmpty() == true) {
                             value
                         } else null
-                        quizStage = quizStage?.copy(description = description)
+                        stage = stage?.copy(description = description)
                     }
                 }
             }
@@ -112,7 +112,7 @@ val QuizStageEditor = FC<Props> {
                     QuizCategoryOverview {
                         quizCategory = category
                         this.categoryNumber = categoryNumber
-                        onCategoryChosen = { navigate(nav, parentQuizId, quizStageId, category.id) }
+                        onCategoryChosen = { navigate(nav, parentQuizId, stageId, category.id) }
                         onDeleteCategory = {
                             launch {
                                 runCatching { rest.categories.delete(category.id) }
@@ -123,7 +123,7 @@ val QuizStageEditor = FC<Props> {
                                         )
 
                                         runCatching {
-                                            quizStage = rest.stages.get(
+                                            stage = rest.stages.get(
                                                 loadedQuizStage.id,
                                                 withCategories = true
                                             )
@@ -151,7 +151,7 @@ val QuizStageEditor = FC<Props> {
     FloatingButtons {
         fabs = listOf(
             FabSpec("Quiz Seite speichern", FabColor.success, FabKind.SAVE) {
-                quizStage?.let { quizStageToSave ->
+                stage?.let { quizStageToSave ->
                     executeExceptionHandled({ failure ->
                         logger.error(failure) { "Failed to save quiz stage '$${quizStageToSave.id}'" }
                         globalMsgTrigger.showError(
@@ -173,7 +173,7 @@ val QuizStageEditor = FC<Props> {
     }
     NewQuizCategoryCreator {
         this.parentQuizId = parentQuizId
-        parentQuizStageId = quizStageId
+        parentQuizStageId = stageId
         show = showNewCategoryCreator
         globalMessageTrigger = globalMsgTrigger
         shortMessageTrigger = shortMsgTrigger
