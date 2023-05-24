@@ -11,6 +11,7 @@ fun mdcOf(
     quizId: Uuid? = null,
     quizStageId: Uuid? = null,
     quizCategoryId: Uuid? = null,
+    fileInfoId: Uuid? = null,
 ) = MDCContext(buildMap {
     if (quizId != null) {
         put(QUIZ_ID_MDC, "$quizId")

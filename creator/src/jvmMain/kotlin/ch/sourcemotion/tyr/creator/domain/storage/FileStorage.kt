@@ -36,7 +36,7 @@ class FileStorage private constructor(
         return runCatching { if (fileSystem.exists(filePath).await()) {
             fileSystem.readFile("${basePath}/$fileName").await()
         } else null }.getOrElse {
-            throw FileStorageException("Failed to get file '$id' of type '$mimeType'")
+            throw FileStorageException("Failed to get file")
         }
     }
 
@@ -45,7 +45,7 @@ class FileStorage private constructor(
         runCatching {
             fileSystem.delete("${basePath}/$fileName").await()
         }.onFailure {
-            logger.warn { "Failed to delete file '$id' of type '$mimeType'" }
+            throw FileStorageException("Failed to delete file")
         }
     }
 

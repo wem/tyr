@@ -1,11 +1,13 @@
 package ch.sourcemotion.tyr.creator.datamapping
 
-import ch.sourcemotion.tyr.creator.domain.MimeType
 import ch.sourcemotion.tyr.creator.domain.entity.question.element.Image
 import ch.sourcemotion.tyr.creator.domain.entity.question.element.QuestionElement
 import ch.sourcemotion.tyr.creator.domain.entity.question.element.Sound
 import ch.sourcemotion.tyr.creator.domain.entity.question.element.Text
-import ch.sourcemotion.tyr.creator.dto.element.*
+import ch.sourcemotion.tyr.creator.dto.element.ImageDto
+import ch.sourcemotion.tyr.creator.dto.element.QuestionElementDto
+import ch.sourcemotion.tyr.creator.dto.element.SoundDto
+import ch.sourcemotion.tyr.creator.dto.element.TextDto
 
 object QuestionElementMapper : Mapper<QuestionElement, QuestionElementDto> {
     override fun mapToDto(entity: QuestionElement) = when(entity) {
@@ -55,13 +57,3 @@ object SoundMapper: Mapper<Sound, SoundDto> {
 
 fun Sound.toDto() = SoundMapper.mapToDto(this)
 fun SoundDto.toEntity() = SoundMapper.mapToEntity(this)
-
-
-object MimeTypeMapper : Mapper<MimeType, MimeTypeDto> {
-    override fun mapToDto(entity: MimeType) = MimeTypeDto.valueOf(entity.name)
-
-    override fun mapToEntity(dto: MimeTypeDto) = MimeType.valueOf(dto.name)
-}
-
-fun MimeType.toDto() = MimeTypeMapper.mapToDto(this)
-fun MimeTypeDto.toEntity() = MimeTypeMapper.mapToEntity(this)
