@@ -21,7 +21,7 @@ interface FileService : Service {
 
 
     suspend fun getFileInfos(query: GetFileInfosQuery): List<FileInfoDto> = getVertx().eventBus().queryMsg(query)
-    suspend fun getFileData(query: GetFileDataQuery): Buffer? = getVertx().eventBus().queryMsg(query)
+    suspend fun getFileData(query: GetFileDataQuery): Buffer = getVertx().eventBus().queryMsg(query)
 
     suspend fun saveFile(cmd: SaveFileCmd): Unit = getVertx().eventBus().cmdMsg(cmd)
     suspend fun saveFileInfo(cmd: SaveFileInfoCmd): Unit = getVertx().eventBus().cmdMsg(cmd)
@@ -33,7 +33,7 @@ interface FileService : Service {
     }
 
 
-    data class GetFileDataQuery(val id: Uuid, val mimeTypeDto: MimeTypeDto) : Query<Buffer?>, Addressable {
+    data class GetFileDataQuery(val id: Uuid, val mimeTypeDto: MimeTypeDto) : Query<Buffer>, Addressable {
         companion object : Addressable {
             override val address = "/creator/file/query/get-file-data"
         }
@@ -60,12 +60,12 @@ interface FileService : Service {
         override fun mdcOf() = mdcOf(fileInfoId = info.id)
     }
 
-    data class DeleteFileCmd(val info: FileInfoDto) : Cmd, Addressable {
+    data class DeleteFileCmd(val id: Uuid, val mimeType: MimeTypeDto) : Cmd, Addressable {
         companion object : Addressable {
             override val address = "/creator/file/cmd/delete-file"
         }
 
         override val address = Companion.address
-        override fun mdcOf() = mdcOf(fileInfoId = info.id)
+        override fun mdcOf() = mdcOf(fileInfoId = id)
     }
 }

@@ -6,13 +6,13 @@ import ch.sourcemotion.tyr.creator.domain.entity.FileInfoEntity
 import ch.sourcemotion.tyr.creator.domain.repository.FileInfoRepository
 import ch.sourcemotion.tyr.creator.domain.repository.FileInfoRepositoryException
 import ch.sourcemotion.tyr.creator.domain.service.FileService.*
+import ch.sourcemotion.tyr.creator.domain.storage.FileNotFoundInStoreException
 import ch.sourcemotion.tyr.creator.domain.storage.FileStorage
 import ch.sourcemotion.tyr.creator.dto.FileInfoDto
 import ch.sourcemotion.tyr.creator.dto.element.MimeTypeDto
 import ch.sourcemotion.tyr.creator.ext.newUUID
 import ch.sourcemotion.tyr.creator.ext.shareFactory
 import io.kotest.assertions.throwables.shouldThrow
-import io.kotest.matchers.nulls.shouldBeNull
 import io.kotest.matchers.shouldBe
 import io.kotest.matchers.types.shouldBeInstanceOf
 import io.mockk.coEvery
@@ -88,7 +88,11 @@ class FileServiceVerticleTest : AbstractServiceVerticleTest() {
             shouldThrow<FileServiceVerticleException> {
                 sutClient.saveFile(SaveFileCmd(fileInfoDto, fileContent))
             }.cause.shouldBeInstanceOf<FileInfoRepositoryException>()
-            sutClient.getFileData(GetFileDataQuery(fileInfoDto.id, fileInfoDto.mimeType)).shouldBeNull()
+            shouldThrow<FileServiceVerticleException> {
+                sutClient.getFileData(
+                    GetFileDataQuery(fileInfoDto.id, fileInfoDto.mimeType)
+                )
+            }.cause.shouldBeInstanceOf<FileNotFoundInStoreException>()
         }
 
     @Test
@@ -151,8 +155,12 @@ class FileServiceVerticleTest : AbstractServiceVerticleTest() {
             deploySut(tempDir)
 
             sutClient.saveFile(SaveFileCmd(fileInfoDto, fileContent))
-            sutClient.deleteFile(DeleteFileCmd(fileInfoDto))
-            sutClient.getFileData(GetFileDataQuery(fileInfoDto.id, fileInfoDto.mimeType)).shouldBeNull()
+            sutClient.deleteFile(DeleteFileCmd(fileInfoDto.id, fileInfoDto.mimeType))
+            shouldThrow<FileServiceVerticleException> {
+                sutClient.getFileData(
+                    GetFileDataQuery(fileInfoDto.id, fileInfoDto.mimeType)
+                )
+            }.cause.shouldBeInstanceOf<FileNotFoundInStoreException>()
         }
 
     @Test
@@ -184,7 +192,9 @@ class FileServiceVerticleTest : AbstractServiceVerticleTest() {
             deploySut(tempDir)
 
             sutClient.saveFile(SaveFileCmd(fileInfoDto, fileContent))
-            shouldThrow<FileServiceVerticleException> { sutClient.deleteFile(DeleteFileCmd(fileInfoDto)) }.cause.shouldBeInstanceOf<FileInfoRepositoryException>()
+            shouldThrow<FileServiceVerticleException> {
+                sutClient.deleteFile(DeleteFileCmd(fileInfoDto.id, fileInfoDto.mimeType))
+            }.cause.shouldBeInstanceOf<FileInfoRepositoryException>()
             sutClient.getFileData(GetFileDataQuery(fileInfoDto.id, fileInfoDto.mimeType)).shouldBe(fileContent)
         }
 

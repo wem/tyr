@@ -54,8 +54,8 @@ class FileServiceVerticle : CoroutineVerticle(), FileService {
         runCatching {
             // We first delete the database tuple. It's "better" to have a file on the filesystem without a tuple
             // than the opposite
-            repo.delete(cmd.info.id)
-            storage.deleteFile(cmd.info.id, cmd.info.mimeType.toEntity())
+            repo.delete(cmd.id)
+            storage.deleteFile(cmd.id, cmd.mimeType.toEntity())
         }.getOrElse { failure -> throw FileServiceVerticleException("Failed to delete file", failure) }
     }
 
@@ -65,7 +65,7 @@ class FileServiceVerticle : CoroutineVerticle(), FileService {
         }.getOrElse { failure -> throw FileServiceVerticleException("Failed to get files information", failure) }
     }
 
-    override suspend fun getFileData(query: GetFileDataQuery): Buffer? {
+    override suspend fun getFileData(query: GetFileDataQuery): Buffer {
         return runCatching {
             storage.getFileContent(query.id, query.mimeTypeDto.toEntity())
         }.getOrElse { failure -> throw FileServiceVerticleException("Failed to get file content", failure) }
