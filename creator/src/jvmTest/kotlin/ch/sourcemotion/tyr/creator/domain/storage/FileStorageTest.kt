@@ -4,8 +4,8 @@ import ch.sourcemotion.tyr.creator.config.FileStorageConfig
 import ch.sourcemotion.tyr.creator.domain.MimeType
 import ch.sourcemotion.tyr.creator.ext.newUUID
 import ch.sourcemotion.tyr.creator.testing.AbstractVertxTest
+import io.kotest.assertions.throwables.shouldThrow
 import io.kotest.matchers.collections.shouldBeEmpty
-import io.kotest.matchers.nulls.shouldBeNull
 import io.kotest.matchers.shouldBe
 import io.vertx.core.buffer.Buffer
 import io.vertx.junit5.VertxTestContext
@@ -39,8 +39,26 @@ class FileStorageTest : AbstractVertxTest() {
             sut.saveFile(fileId, fileContent, MimeType.JPEG)
 
             sut.deleteFile(fileId, MimeType.JPEG)
-            sut.getFileContent(fileId, MimeType.PNG).shouldBeNull()
+            shouldThrow<FileNotFoundInStoreException> { sut.getFileContent(fileId, MimeType.JPEG) }
             verifyFileSystemStorageIsEmpty(tempDir)
+        }
+
+    @Test
+    fun `get - not exists`(testContext: VertxTestContext, @TempDir tempDir: Path) =
+        testContext.async {
+            val sut = FileStorage.of(vertx, FileStorageConfig(tempDir.toFile().absolutePath))
+
+            val fileId = newUUID()
+            shouldThrow<FileNotFoundInStoreException> { sut.getFileContent(fileId, MimeType.JPEG) }
+        }
+
+    @Test
+    fun `delete - not exists`(testContext: VertxTestContext, @TempDir tempDir: Path) =
+        testContext.async {
+            val sut = FileStorage.of(vertx, FileStorageConfig(tempDir.toFile().absolutePath))
+
+            val fileId = newUUID()
+            shouldThrow<FileNotFoundInStoreException> { sut.deleteFile(fileId, MimeType.JPEG) }
         }
 
     private suspend fun verifyFileSystemStorageIsEmpty(tempDir: Path) {

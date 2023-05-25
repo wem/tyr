@@ -3,11 +3,13 @@ package ch.sourcemotion.tyr.creator.domain.storage
 import ch.sourcemotion.tyr.creator.config.FileStorageConfig
 import ch.sourcemotion.tyr.creator.domain.MimeType
 import ch.sourcemotion.tyr.creator.exception.CreatorException
+import ch.sourcemotion.tyr.creator.ext.getLastCause
 import io.vertx.core.Vertx
 import io.vertx.core.buffer.Buffer
 import io.vertx.core.file.FileSystem
 import io.vertx.kotlin.coroutines.await
 import mu.KLogging
+import java.nio.file.NoSuchFileException
 import java.util.*
 
 class FileStorage private constructor(
@@ -30,13 +32,15 @@ class FileStorage private constructor(
         }
     }
 
-    suspend fun getFileContent(id: UUID, mimeType: MimeType): Buffer? {
+    suspend fun getFileContent(id: UUID, mimeType: MimeType): Buffer {
         val fileName = fileNameOf(id, mimeType)
-        val filePath = "${basePath}/$fileName"
-        return runCatching { if (fileSystem.exists(filePath).await()) {
+        return runCatching {
             fileSystem.readFile("${basePath}/$fileName").await()
-        } else null }.getOrElse {
-            throw FileStorageException("Failed to get file")
+        }.getOrElse { failure ->
+            if (failure.getLastCause() is NoSuchFileException) {
+                throw FileNotFoundInStoreException(id, mimeType)
+            }
+            throw FileStorageException("Failed to get file", failure)
         }
     }
 
@@ -44,8 +48,11 @@ class FileStorage private constructor(
         val fileName = fileNameOf(id, mimeType)
         runCatching {
             fileSystem.delete("${basePath}/$fileName").await()
-        }.onFailure {
-            throw FileStorageException("Failed to delete file")
+        }.onFailure { failure ->
+            if (failure.getLastCause() is NoSuchFileException) {
+                throw FileNotFoundInStoreException(id, mimeType)
+            }
+            throw FileStorageException("Failed to delete file", failure)
         }
     }
 
@@ -53,4 +60,7 @@ class FileStorage private constructor(
         "${fileId}.${fileExtensionByMimeType[mimeType]}"
 }
 
-class FileStorageException(message: String?, cause: Throwable? = null) : CreatorException(message, cause)
+open class FileStorageException(message: String?, cause: Throwable? = null) : CreatorException(message, cause)
+
+class FileNotFoundInStoreException(fileId: UUID, mimeType: MimeType) :
+    FileStorageException("File '$fileId' of type '${mimeType.name}' not found")
