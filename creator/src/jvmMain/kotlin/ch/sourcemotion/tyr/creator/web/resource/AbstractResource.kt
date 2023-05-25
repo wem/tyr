@@ -1,10 +1,10 @@
 package ch.sourcemotion.tyr.creator.web.resource
 
-import ch.sourcemotion.tyr.creator.dto.jsonDtoSerialization
 import io.netty.handler.codec.http.HttpHeaderNames
 import io.netty.handler.codec.http.HttpHeaderValues
 import io.vertx.core.Vertx
 import io.vertx.core.http.HttpServerResponse
+import io.vertx.ext.web.Router
 import io.vertx.ext.web.RoutingContext
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
@@ -12,8 +12,10 @@ import kotlinx.coroutines.slf4j.MDCContext
 import kotlinx.serialization.json.Json
 
 abstract class AbstractResource(
-    protected val vertx: Vertx, protected val scope: CoroutineScope, protected val json: Json = jsonDtoSerialization()
+    protected val vertx: Vertx, protected val scope: CoroutineScope, protected val json: Json
 ) : CoroutineScope by scope {
+
+    abstract fun deploy(router: Router)
 
     protected inline fun RoutingContext.withExceptionHandling(
         mdc: MDCContext = MDCContext(),

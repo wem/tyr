@@ -3,7 +3,6 @@ package ch.sourcemotion.tyr.creator.web.resource
 import ch.sourcemotion.tyr.creator.domain.service.QuizCategoryService
 import ch.sourcemotion.tyr.creator.domain.service.QuizCategoryService.*
 import ch.sourcemotion.tyr.creator.dto.QuizCategoryDto
-import ch.sourcemotion.tyr.creator.dto.jsonDtoSerialization
 import ch.sourcemotion.tyr.creator.ext.asUtf8String
 import ch.sourcemotion.tyr.creator.ext.onFailureAndRethrow
 import ch.sourcemotion.tyr.creator.logging.mdcOf
@@ -24,9 +23,8 @@ class QuizCategoryResource(
     vertx: Vertx,
     scope: CoroutineScope,
     private val quizStageIdKey: String,
-    json: Json = jsonDtoSerialization()
-) :
-    AbstractResource(vertx, scope, json) {
+    json: Json
+) : AbstractResource(vertx, scope, json) {
 
     private companion object : KLogging() {
         const val QUIZ_CATEGORY_ID_KEY = "quizCategoryId"
@@ -34,7 +32,7 @@ class QuizCategoryResource(
 
     private val service = QuizCategoryService.create(vertx)
 
-    fun deploy(router: Router) {
+    override fun deploy(router: Router) {
         router.put("/stages/:$quizStageIdKey/categories").handler(::onPutQuizCategory)
             .consumes("${HttpHeaderValues.APPLICATION_JSON}")
         router.get("/stages/:$quizStageIdKey/categories").handler(::onGetQuizCategories)

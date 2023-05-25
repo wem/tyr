@@ -3,7 +3,6 @@ package ch.sourcemotion.tyr.creator.web.resource
 import ch.sourcemotion.tyr.creator.domain.service.QuizService
 import ch.sourcemotion.tyr.creator.domain.service.QuizService.*
 import ch.sourcemotion.tyr.creator.dto.QuizDto
-import ch.sourcemotion.tyr.creator.dto.jsonDtoSerialization
 import ch.sourcemotion.tyr.creator.ext.asUtf8String
 import ch.sourcemotion.tyr.creator.ext.onFailureAndRethrow
 import ch.sourcemotion.tyr.creator.logging.mdcOf
@@ -19,8 +18,11 @@ import kotlinx.serialization.json.Json
 import mu.KLogging
 import java.util.*
 
-class QuizzesResource(vertx: Vertx, scope: CoroutineScope, json: Json = jsonDtoSerialization()) :
-    AbstractResource(vertx, scope, json) {
+class QuizzesResource(
+    vertx: Vertx,
+    scope: CoroutineScope,
+    json: Json
+) : AbstractResource(vertx, scope, json) {
 
     private companion object : KLogging() {
         const val QUIZ_ID_KEY = "quizId"
@@ -28,7 +30,7 @@ class QuizzesResource(vertx: Vertx, scope: CoroutineScope, json: Json = jsonDtoS
 
     private val service = QuizService.create(vertx)
 
-    fun deploy(router: Router) {
+    override fun deploy(router: Router) {
         QuizStagesResource(vertx, scope, QUIZ_ID_KEY, json).deploy(router)
 
         router.put("/quizzes").handler(::onPutQuiz).consumes("${HttpHeaderValues.APPLICATION_JSON}")

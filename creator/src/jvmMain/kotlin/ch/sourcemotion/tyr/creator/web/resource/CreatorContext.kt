@@ -23,6 +23,7 @@ class CreatorContext(
 
         creatorRouter.route().failureHandler(this::onFailure)
         QuizzesResource(vertx, scope, json).deploy(creatorRouter)
+        FileResource(vertx, scope, json).deploy(creatorRouter)
 
         parentRouter.route("/creator/*").subRouter(creatorRouter)
     }
