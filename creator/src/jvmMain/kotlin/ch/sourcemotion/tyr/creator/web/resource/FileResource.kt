@@ -40,7 +40,7 @@ class FileResource(
     private val service = FileService.create(vertx)
 
     override fun deploy(router: Router) {
-        router.put("/files").handler(::onPutFile)
+        router.post("/files").handler(::onPostFile)
             .consumes("$MULTIPART_FORM_DATA")
         router.put("/files").handler(::onPutFileInfo)
             .consumes("$APPLICATION_JSON")
@@ -52,7 +52,7 @@ class FileResource(
         router.get("/files/:$FILE_ID_KEY").handler(::onGetFileContent)
     }
 
-    private fun onPutFile(rc: RoutingContext) {
+    private fun onPostFile(rc: RoutingContext) {
         runCatching {
             Triple(
                 rc.fileUploads().first(),

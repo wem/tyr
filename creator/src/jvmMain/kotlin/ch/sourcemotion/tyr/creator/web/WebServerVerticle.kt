@@ -24,6 +24,7 @@ class WebServerVerticle : VerticleWithOptions<WebServerConfig>(WebServerConfig::
         if (options.develMode) {
             mainRouter.route().handler(CorsHandler.create()
                 .allowedMethod(GET)
+                .allowedMethod(POST)
                 .allowedMethod(PUT)
                 .allowedMethod(DELETE)
             )
