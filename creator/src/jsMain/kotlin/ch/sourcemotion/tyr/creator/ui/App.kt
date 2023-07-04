@@ -1,6 +1,7 @@
 package ch.sourcemotion.tyr.creator.ui
 
 import ch.sourcemotion.tyr.creator.ui.category.QuizCategoryEditor
+import ch.sourcemotion.tyr.creator.ui.file.FileList
 import ch.sourcemotion.tyr.creator.ui.quiz.QuizEditor
 import ch.sourcemotion.tyr.creator.ui.stage.QuizStageEditor
 import js.core.jso
@@ -40,6 +41,11 @@ private val browserRouter = createBrowserRouter(
                 jso {
                     path = "/:$QUIZ_NAV_PARAM/:$QUIZ_STAGE_NAV_PARAM/:$QUIZ_CATEGORY_NAV_PARAM"
                     Component = QuizCategoryEditor
+                    ErrorBoundary = Error
+                },
+                jso {
+                    path = "/files"
+                    Component = FileList
                     ErrorBoundary = Error
                 }
             )

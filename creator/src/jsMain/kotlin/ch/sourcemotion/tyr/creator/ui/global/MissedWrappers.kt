@@ -1,6 +1,7 @@
 package ch.sourcemotion.tyr.creator.ui.global
 
 import mui.material.*
+import mui.system.BoxProps
 
 // TODO: Remove when it will be implemented in MUI wrappers
 inline var GridProps.xs: Int

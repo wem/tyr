@@ -9,6 +9,10 @@ const val QUIZ_NAV_PARAM = "quizId"
 const val QUIZ_STAGE_NAV_PARAM = "quizStageId"
 const val QUIZ_CATEGORY_NAV_PARAM = "quizCategoryId"
 
+fun navigateToFileList(func: NavigateFunction) {
+    func("/files")
+}
+
 fun navigate(func: NavigateFunction, quizId: Uuid? = null, quizStageId: Uuid? = null, quizCategoryId: Uuid? = null) {
     var path = "/"
     quizId?.let { path += "$it" }

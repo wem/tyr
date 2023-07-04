@@ -1,5 +1,6 @@
 package ch.sourcemotion.tyr.creator.ui.global
 
+import ch.sourcemotion.tyr.creator.ui.navigateToFileList
 import ch.sourcemotion.tyr.creator.ui.quiz.ExistingQuizChooser
 import ch.sourcemotion.tyr.creator.ui.quiz.NewQuizCreator
 import mui.icons.material.Edit
@@ -13,11 +14,14 @@ import react.FC
 import react.Props
 import react.ReactNode
 import react.dom.html.ReactHTML.div
+import react.router.useNavigate
 import react.useState
 
 val MainBar = FC<Props> {
 
     val theme = useTheme<Theme>()
+    val nav = useNavigate()
+
     var showNewQuizCreator by useState(false)
     var showExistingQuizChooser by useState(false)
 
@@ -77,6 +81,10 @@ val MainBar = FC<Props> {
                     color = IconButtonColor.inherit
 
                     FileOpen()
+
+                    onClick = {
+                        navigateToFileList(nav)
+                    }
                 }
             }
 

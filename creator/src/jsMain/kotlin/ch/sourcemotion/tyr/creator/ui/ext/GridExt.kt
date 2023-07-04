@@ -15,3 +15,7 @@ fun PropertiesBuilder.rowFlow() {
     gridAutoFlow = GridAutoFlow.row
 }
 
+fun PropertiesBuilder.columnFlow() {
+    gridAutoFlow = GridAutoFlow.column
+}
+
